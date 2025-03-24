@@ -20,7 +20,7 @@ from pyscicat.model import (
     Sample,
 )
 
-logger = logging.getLogger("splash_ingest")
+logger = logging.getLogger("pyscicat")
 can_debug = logger.isEnabledFor(logging.DEBUG)
 
 
@@ -807,17 +807,23 @@ def get_file_mod_time(pathobj: Path):
 
 
 def from_token(base_url: str, token: str):
+    if not base_url.endswith('/'):
+        base_url += '/'
+        logger.warning(f"Base URL should end with a slash. Appending one to {base_url}")
     return ScicatClient(base_url, token)
 
 
 def from_credentials(base_url: str, username: str, password: str):
+    if not base_url.endswith('/'):
+        base_url += '/'
+        logger.warning(f"Base URL should end with a slash. Appending one to {base_url}")
     token = get_token(base_url, username, password)
     return from_token(base_url, token)
 
 
 def _log_in_via_users_login(base_url, username, password):
     response = requests.post(
-        urljoin(base_url, "Users/login"),
+        urljoin(base_url, "auth/login"),
         json={"username": username, "password": password},
         stream=False,
         verify=True,
@@ -825,22 +831,6 @@ def _log_in_via_users_login(base_url, username, password):
     if not response.ok:
         logger.info(f" Failed to log in via endpoint Users/login: {response.json()}")
     return response
-
-
-def _log_in_via_auth_msad(base_url, username, password):
-    import re
-
-    # Strip the api/vn suffix
-    base_url = re.sub(r"/api/v\d+/?", "", base_url)
-    response = requests.post(
-        urljoin(base_url, "auth/msad"),
-        json={"username": username, "password": password},
-        stream=False,
-        verify=True,
-    )
-    if not response.ok:
-        logger.error(f"Error retrieving token for user: {response.json()}")
-        raise ScicatLoginError(response.content)
 
 
 def get_token(base_url, username, password):
@@ -855,9 +845,14 @@ def get_token(base_url, username, password):
     if response.ok:
         return response.json()["id"]  # not sure if semantically correct
 
-    response = _log_in_via_auth_msad(base_url, username, password)
-    if response.ok:
-        return response.json()["access_token"]
-
     logger.error(f" Failed log in:  {response.json()}")
     raise ScicatLoginError(response.content)
+
+
+if __name__ == "__main__":
+    import os
+    client = from_credentials(
+        os.getenv("SCICAT_URL"),
+        os.getenv("SCICAT_USER"),
+        os.getenv("SCICAT_PASSWORD"))
+    print(client.datasets_find())

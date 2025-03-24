@@ -1,6 +1,7 @@
 name: Integration tests V4
 
 on:
+  push:
   pull_request:
     branches:
       - main

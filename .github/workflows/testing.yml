@@ -3,9 +3,8 @@ name: Unit Tests
 on:
   push:
   pull_request:
-  schedule:
-      - cron: '00 4 * * *'  # daily at 4AM
-
+    branches:
+      - main
 jobs:
 
   build:

@@ -29,7 +29,7 @@ local_url = "http://localhost:3000/api/v3/"
 
 def add_mock_requests(mock_request):
     mock_request.post(
-        local_url + "Users/login",
+        local_url + "auth/login",
         json={"id": "a_token"},
     )
 
@@ -224,3 +224,13 @@ def test_initializers():
         client = ScicatClient(local_url, "a_token")
         assert client._token == "a_token"
         assert client._headers["Authorization"] == "Bearer a_token"
+
+
+def test_append_slash_base_url():
+    with requests_mock.Mocker() as mock_request:
+        add_mock_requests(mock_request)
+        slashless_url = local_url[:-1]
+        client = from_token(slashless_url, "a_token")
+        assert client._base_url == local_url
+        client = from_credentials(slashless_url, "Zaphod", "heartofgold")
+        assert client._base_url == local_url

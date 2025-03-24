@@ -73,10 +73,12 @@ class Sample(Ownable):
     description: Optional[str] = None
     sampleCharacteristics: Optional[dict] = None
     isPublished: bool = False
-    datasetsId: Optional[str]
-    datasetId: Optional[str]
-    rawDatasetId: Optional[str]
-    derivedDatasetId: Optional[str]
+    # Following were added, possibly by mistake. They do
+    # not match the current model in the SciCat backend.
+    datasetsId: Optional[str] = None
+    datasetId: Optional[str] = None
+    rawDatasetId: Optional[str] = None
+    derivedDatasetId: Optional[str] = None
 
 
 class Job(MongoQueryable):
