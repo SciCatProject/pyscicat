@@ -92,7 +92,7 @@ class ScicatClient:
     ):
         """sends a command to the SciCat API server using url and token, returns the response JSON
         Get token with the getToken method"""
-        endpoint_url = '/'.join(s.strip('/') for s in [self._base_url, endpoint])
+        endpoint_url = "/".join(s.strip("/") for s in [self._base_url, endpoint])
         return requests.request(
             method=cmd,
             url=endpoint_url,
@@ -826,7 +826,7 @@ def from_credentials(base_url: str, username: str, password: str):
 
 
 def _log_in_via_users_login(base_url, username, password, headers={}):
-    login_url = '/'.join(s.strip('/') for s in [base_url, 'auth/login'])
+    login_url = "/".join(s.strip("/") for s in [base_url, "auth/login"])
     response = requests.post(
         login_url,
         json={"username": username, "password": password},
