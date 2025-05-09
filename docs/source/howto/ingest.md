@@ -38,7 +38,7 @@ Now we setup an `Ownable` instance. This is a model class that several other mod
 ```python
 # Create a RawDataset object with settings for your choosing. Notice how
 # we pass the `ownable` instance.
-dataset = Dataset(
+dataset = RawDataset(
     size=42,
     owner="slartibartfast",
     contactEmail="slartibartfast@magrathea.org",
@@ -114,7 +114,7 @@ from pyscicat.model import (
     Attachment,
     Datablock,
     DataFile,
-    Dataset,
+    RawDataset,
     Ownable
 )
 
@@ -130,7 +130,7 @@ thumb_path = Path(__file__).parent.parent / "test/data/SciCatLogo.png"
 
 # Create a RawDataset object with settings for your choosing. Notice how
 # we pass the `ownable` instance.
-dataset = Dataset(
+dataset = RawDataset(
     size=42,
     owner="slartibartfast",
     contactEmail="slartibartfast@magrathea.org",
