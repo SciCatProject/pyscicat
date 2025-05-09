@@ -95,8 +95,8 @@ class ScicatClient:
         endpoint_url = '/'.join(s.strip('/') for s in [self._base_url, endpoint])
         return requests.request(
             method=cmd,
-            json=data.dict(exclude_none=True) if data is not None else None,
             url=endpoint_url,
+            json=data.model_dump(exclude_none=True) if data is not None else None,
             params={"access_token": self._token},
             headers=self._headers,
             timeout=self._timeout_seconds,
