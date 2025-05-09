@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import quote_plus
 
 import requests
 from pydantic import BaseModel
@@ -94,10 +94,11 @@ class ScicatClient:
     ):
         """sends a command to the SciCat API server using url and token, returns the response JSON
         Get token with the getToken method"""
+        endpoint_url = '/'.join(s.strip('/') for s in [self._base_url, endpoint])
         return requests.request(
             method=cmd,
-            url=urljoin(self._base_url, endpoint),
             json=data.dict(exclude_none=True) if data is not None else None,
+            url=endpoint_url,
             params={"access_token": self._token},
             headers=self._headers,
             timeout=self._timeout_seconds,
@@ -833,8 +834,9 @@ def from_credentials(base_url: str, username: str, password: str):
 
 
 def _log_in_via_users_login(base_url, username, password, headers={}):
+    login_url = '/'.join(s.strip('/') for s in [base_url, 'auth/login'])
     response = requests.post(
-        urljoin(base_url, "auth/login"),
+        login_url,
         json={"username": username, "password": password},
         headers=headers,
         stream=False,
