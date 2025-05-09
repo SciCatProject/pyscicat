@@ -150,13 +150,13 @@ class RawDataset(Dataset):
     Raw datasets from which derived datasets are... derived.
     """
 
-    principalInvestigator: Optional[str] = None
-    creationLocation: Optional[str] = None
     type: DatasetType = DatasetType.raw
+    creationLocation: str  # Required for a raw dataset
     dataFormat: Optional[str] = None
     endTime: Optional[str] = None  # datetime
-    sampleId: Optional[str] = None
+    principalInvestigator: str  # Required for a raw dataset
     proposalId: Optional[str] = None
+    sampleId: Optional[str] = None
 
 
 class DerivedDataset(Dataset):

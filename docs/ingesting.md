@@ -88,7 +88,7 @@ A successful response to this message will contain a `sampleId` field that will 
 Next, send a POST request to the [Dataset endpoint](https://scicatproject.github.io/api/#operation/Dataset.create)
 
 ### Ingest Dataset
-`Dataset` sample object
+`RawDataset` sample object
 ``` json
 
 {
@@ -180,7 +180,7 @@ modTime = get_file_mod_time(filePath)
 fileSize = get_file_size(filePath)
 
 # rawDataset
-dataset= Dataset(
+dataset = RawDataset(
     path = filePath.as_posix(),
     size = fileSize,
     owner = 'Sponge',

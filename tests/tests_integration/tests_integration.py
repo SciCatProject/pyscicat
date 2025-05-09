@@ -34,7 +34,6 @@ def test_upload_dataset():
     ownable = Ownable(ownerGroup="ingestor", accessGroups=[])
     payload = RawDataset(
         datasetName="a new guide book",
-        path="/foo/bar",
         size=42,
         packedSize=0,
         owner=os.environ["SCICAT_USER"],

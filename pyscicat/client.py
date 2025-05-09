@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import quote_plus
 
 import requests
 from pydantic import BaseModel
@@ -69,8 +69,6 @@ class ScicatClient:
         timeout_seconds : [int], optional
             timeout in seconds to wait for http connections to return, by default None
         """
-        if base_url[-1] != "/":
-            base_url = base_url + "/"
         self._base_url = base_url
         self._timeout_seconds = (
             timeout_seconds  # we are hitting a transmission timeout...
@@ -94,10 +92,11 @@ class ScicatClient:
     ):
         """sends a command to the SciCat API server using url and token, returns the response JSON
         Get token with the getToken method"""
+        endpoint_url = "/".join(s.strip("/") for s in [self._base_url, endpoint])
         return requests.request(
             method=cmd,
-            url=urljoin(self._base_url, endpoint),
-            json=data.dict(exclude_none=True) if data is not None else None,
+            url=endpoint_url,
+            json=data.model_dump(exclude_none=True) if data is not None else None,
             params={"access_token": self._token},
             headers=self._headers,
             timeout=self._timeout_seconds,
@@ -818,23 +817,18 @@ def get_file_mod_time(pathobj: Path):
 
 
 def from_token(base_url: str, token: str):
-    if not base_url.endswith("/"):
-        base_url += "/"
-        logger.warning(f"Base URL should end with a slash. Appending one to {base_url}")
     return ScicatClient(base_url, token)
 
 
 def from_credentials(base_url: str, username: str, password: str):
-    if not base_url.endswith("/"):
-        base_url += "/"
-        logger.warning(f"Base URL should end with a slash. Appending one to {base_url}")
     token = get_token(base_url, username, password)
     return from_token(base_url, token)
 
 
 def _log_in_via_users_login(base_url, username, password, headers={}):
+    login_url = "/".join(s.strip("/") for s in [base_url, "auth/login"])
     response = requests.post(
-        urljoin(base_url, "auth/login"),
+        login_url,
         json={"username": username, "password": password},
         headers=headers,
         stream=False,
