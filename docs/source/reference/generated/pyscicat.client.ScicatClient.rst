@@ -16,7 +16,7 @@
       ~ScicatClient.__init__
       ~ScicatClient.upload_attachment
       ~ScicatClient.upload_datablock
-      ~ScicatClient.upload_raw_dataset
+      ~ScicatClient.datasets_create
    
    
 

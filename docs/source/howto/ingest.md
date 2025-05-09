@@ -53,8 +53,8 @@ dataset = Dataset(
     sourceFolder="/foo/bar",
     scientificMetadata={"a": "field"},
     sampleId="gargleblaster",
-dataset_id = scicat.upload_raw_dataset(dataset)
     **ownable.model_dump())
+dataset_id = scicat.datasets_create(dataset)
 ```
 Now we can create a Dataset instance and upload it! Notice how we passed the fields of the `ownable` instance there at the end.
 
@@ -146,8 +146,8 @@ dataset = Dataset(
     sourceFolder="/foo/bar",
     scientificMetadata={"a": "field"},
     sampleId="gargleblaster",
-dataset_id = scicat.upload_raw_dataset(dataset)
     **ownable.model_dump())
+dataset_id = scicat.datasets_create(dataset)
 
 # Create Datablock with DataFiles
 data_file = DataFile(path="file.h5", size=42)
