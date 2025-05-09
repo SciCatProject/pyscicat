@@ -113,7 +113,6 @@ def test_scicat_ingest():
 
         # RawDataset
         dataset = RawDataset(
-            path="/foo/bar",
             size=42,
             owner="slartibartfast",
             contactEmail="slartibartfast@magrathea.org",

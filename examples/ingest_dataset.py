@@ -17,7 +17,6 @@ thumb_path = Path(__file__).parent.parent / "test/data/SciCatLogo.png"
 # Create a RawDataset object with settings for your choosing. Notice how
 # we pass the `ownable` instance.
 dataset = RawDataset(
-    path="/foo/bar",
     size=42,
     owner="slartibartfast",
     contactEmail="slartibartfast@magrathea.org",
