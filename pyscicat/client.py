@@ -562,7 +562,7 @@ class ScicatClient:
 
     def datasets_get_many(self, filter_fields: Optional[dict] = None) -> Optional[dict]:
         """
-        Gets datasets using the simple fiter mechanism. This
+        Gets datasets using the simple filter mechanism. This
         is appropriate when you do not require paging or text search, but
         want to be able to limit results based on items in the Dataset object.
         This function has been renamed and the old name has been mantained for backward compatibility
@@ -603,7 +603,7 @@ class ScicatClient:
 
     def samples_get_many(self, filter_fields: Optional[dict] = None) -> Optional[dict]:
         """
-        Gets samples using the simple fiter mechanism. This
+        Gets samples using the simple filter mechanism. This
         is appropriate when you do not require paging or text search, but
         want to be able to limit results based on items in the Sample object.
 
@@ -631,7 +631,7 @@ class ScicatClient:
 
     def published_data_get_many(self, filter=None) -> Optional[dict]:
         """
-        retrieve all the published data using the simple fiter mechanism. This
+        retrieve all the published data using the simple filter mechanism. This
         is appropriate when you do not require paging or text search, but
         want to be able to limit results based on items in the Dataset object.
         This function has been renamed and the old name has been maintained for backward compatibility
