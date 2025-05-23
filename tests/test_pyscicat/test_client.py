@@ -228,8 +228,29 @@ def test_initializers():
 def test_append_slash_base_url():
     with requests_mock.Mocker() as mock_request:
         add_mock_requests(mock_request)
+        ownable = Ownable(ownerGroup="magrathea", accessGroups=["deep_though"])
+
+        # Requests should succeed even if we instantiate with a URL
+        # that has no slash on the end.
         slashless_url = local_url[:-1]
-        client = from_token(slashless_url, "a_token")
-        assert client._base_url == local_url
-        client = from_credentials(slashless_url, "Zaphod", "heartofgold")
-        assert client._base_url == local_url
+
+        scicat = from_token(slashless_url, "a_token")
+        # Test by creating a Sample
+        sample = Sample(
+            sampleId="gargleblaster1",
+            description="Gargleblaster",
+            sampleCharacteristics={"a": "field"},
+            **ownable.model_dump(),
+        )
+        assert scicat.upload_sample(sample) == "gargleblaster1"
+
+        scicat = from_credentials(slashless_url, "Zaphod", "heartofgold")
+        # Test by creating a Sample
+        sample = Sample(
+            sampleId="gargleblaster2",
+            description="Gargleblaster",
+            sampleCharacteristics={"a": "field"},
+            **ownable.model_dump(),
+        )
+        assert scicat.upload_sample(sample) == "gargleblaster2"
+
