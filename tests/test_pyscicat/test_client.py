@@ -234,22 +234,29 @@ def test_append_slash_base_url():
         # that has no slash on the end.
         slashless_url = local_url[:-1]
 
-        scicat = from_token(slashless_url, "a_token")
-        # Test by creating a Sample
-        sample = Sample(
-            sampleId="gargleblaster",
-            description="Gargleblaster",
-            sampleCharacteristics={"a": "field"},
-            **ownable.model_dump(),
-        )
-        assert scicat.upload_sample(sample) == "gargleblaster"
+        urls_to_test = [
+            local_url[:-1],     # URL without the trailing slash
+            local_url + "/",    # URL with a trailing double-slash (should also work)
+        ]
 
-        scicat = from_credentials(slashless_url, "Zaphod", "heartofgold")
-        # Test by creating a Sample
-        sample = Sample(
-            sampleId="gargleblaster",
-            description="Gargleblaster",
-            sampleCharacteristics={"a": "field"},
-            **ownable.model_dump(),
-        )
-        assert scicat.upload_sample(sample) == "gargleblaster"
+        for url in urls_to_test:
+            scicat = from_token(url, "a_token")
+            # Test by creating a Sample
+            sample = Sample(
+                sampleId="gargleblaster",
+                description="Gargleblaster",
+                sampleCharacteristics={"a": "field"},
+                **ownable.model_dump(),
+            )
+            assert scicat.upload_sample(sample) == "gargleblaster"
+
+            scicat = from_credentials(url, "Zaphod", "heartofgold")
+            # Test by creating a Sample
+            sample = Sample(
+                sampleId="gargleblaster",
+                description="Gargleblaster",
+                sampleCharacteristics={"a": "field"},
+                **ownable.model_dump(),
+            )
+            assert scicat.upload_sample(sample) == "gargleblaster"
+
