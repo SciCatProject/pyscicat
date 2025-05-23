@@ -615,6 +615,10 @@ class ScicatClient:
         ```python
         filterField = {"ownerGroup": {"like":"123"}}
         ```
+        To search within the JSON metadata, join sub-fields with ".":
+        ```python
+        filterField = {"sampleCharacteristics.myCustomObject.myField": "1234"}
+        ```
 
         Parameters
         ----------
