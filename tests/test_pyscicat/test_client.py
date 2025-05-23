@@ -231,12 +231,10 @@ def test_append_slash_base_url():
         ownable = Ownable(ownerGroup="magrathea", accessGroups=["deep_though"])
 
         # Requests should succeed even if we instantiate with a URL
-        # that has no slash on the end.
-        slashless_url = local_url[:-1]
-
+        # that has no slash on the end, or too many slashes.
         urls_to_test = [
-            local_url[:-1],     # URL without the trailing slash
-            local_url + "/",    # URL with a trailing double-slash (should also work)
+            local_url[:-1],
+            local_url + "/"
         ]
 
         for url in urls_to_test:
@@ -259,4 +257,3 @@ def test_append_slash_base_url():
                 **ownable.model_dump(),
             )
             assert scicat.upload_sample(sample) == "gargleblaster"
-
