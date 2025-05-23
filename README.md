@@ -27,7 +27,7 @@ dataset = RawDataset(
     instrumentId="earth",
     proposalId="deepthought",
     dataFormat="planet",
-    type = DatasetType.raw,
+    type=DatasetType.raw,
     principalInvestigator="admin",
     sourceFolder="/foo/bar",
     scientificMetadata={"a": "field"},
@@ -44,7 +44,7 @@ sample = Sample(
     isPublished=False,
     **ownable.model_dump()
 )
-sample_id = client.upload_sample(sample)
+sample_id = client.samples_create(sample)
 ```
 
 ### Notes

@@ -113,7 +113,6 @@ def test_scicat_ingest():
 
         # RawDataset
         dataset = RawDataset(
-            path="/foo/bar",
             size=42,
             owner="slartibartfast",
             contactEmail="slartibartfast@magrathea.org",
@@ -175,12 +174,12 @@ def test_get_dataset():
             accessGroups=["deep_though"],
         )
         mock_request.get(
-            local_url + "Datasets/123", json=dataset.dict(exclude_none=True)
+            local_url + "Datasets/123", json=dataset.model_dump(exclude_none=True)
         )
 
         client = from_token(base_url=local_url, token="a_token")
         retrieved = client.datasets_get_one("123")
-        assert retrieved == dataset.dict(exclude_none=True)
+        assert retrieved == dataset.model_dump(exclude_none=True)
 
 
 def test_get_nonexistent_dataset():
@@ -229,8 +228,29 @@ def test_initializers():
 def test_append_slash_base_url():
     with requests_mock.Mocker() as mock_request:
         add_mock_requests(mock_request)
-        slashless_url = local_url[:-1]
-        client = from_token(slashless_url, "a_token")
-        assert client._base_url == local_url
-        client = from_credentials(slashless_url, "Zaphod", "heartofgold")
-        assert client._base_url == local_url
+        ownable = Ownable(ownerGroup="magrathea", accessGroups=["deep_though"])
+
+        # Requests should succeed even if we instantiate with a URL
+        # that has no slash on the end, or too many slashes.
+        urls_to_test = [local_url[:-1], local_url + "/"]
+
+        for url in urls_to_test:
+            scicat = from_token(url, "a_token")
+            # Test by creating a Sample
+            sample = Sample(
+                sampleId="gargleblaster",
+                description="Gargleblaster",
+                sampleCharacteristics={"a": "field"},
+                **ownable.model_dump(),
+            )
+            assert scicat.samples_create(sample) == "gargleblaster"
+
+            scicat = from_credentials(url, "Zaphod", "heartofgold")
+            # Test by creating a Sample
+            sample = Sample(
+                sampleId="gargleblaster",
+                description="Gargleblaster",
+                sampleCharacteristics={"a": "field"},
+                **ownable.model_dump(),
+            )
+            assert scicat.samples_create(sample) == "gargleblaster"

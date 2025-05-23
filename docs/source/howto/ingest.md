@@ -38,8 +38,7 @@ Now we setup an `Ownable` instance. This is a model class that several other mod
 ```python
 # Create a RawDataset object with settings for your choosing. Notice how
 # we pass the `ownable` instance.
-dataset = Dataset(
-    path="/foo/bar",
+dataset = RawDataset(
     size=42,
     owner="slartibartfast",
     contactEmail="slartibartfast@magrathea.org",
@@ -53,8 +52,8 @@ dataset = Dataset(
     sourceFolder="/foo/bar",
     scientificMetadata={"a": "field"},
     sampleId="gargleblaster",
-dataset_id = scicat.upload_raw_dataset(dataset)
     **ownable.model_dump())
+dataset_id = scicat.datasets_create(dataset)
 ```
 Now we can create a Dataset instance and upload it! Notice how we passed the fields of the `ownable` instance there at the end.
 
@@ -72,7 +71,7 @@ sample = Sample(
     isPublished=False,
     **ownable.model_dump()
 )
-sample_id = client.upload_sample(sample)  # sample_id == "gargleblaster"
+sample_id = client.samples_create(sample)  # sample_id == "gargleblaster"
 ```
 
 ## Upload a Datablock
@@ -115,7 +114,7 @@ from pyscicat.model import (
     Attachment,
     Datablock,
     DataFile,
-    Dataset,
+    RawDataset,
     Ownable
 )
 
@@ -131,8 +130,7 @@ thumb_path = Path(__file__).parent.parent / "test/data/SciCatLogo.png"
 
 # Create a RawDataset object with settings for your choosing. Notice how
 # we pass the `ownable` instance.
-dataset = Dataset(
-    path="/foo/bar",
+dataset = RawDataset(
     size=42,
     owner="slartibartfast",
     contactEmail="slartibartfast@magrathea.org",
@@ -146,8 +144,8 @@ dataset = Dataset(
     sourceFolder="/foo/bar",
     scientificMetadata={"a": "field"},
     sampleId="gargleblaster",
-dataset_id = scicat.upload_raw_dataset(dataset)
     **ownable.model_dump())
+dataset_id = scicat.datasets_create(dataset)
 
 # Create Datablock with DataFiles
 data_file = DataFile(path="file.h5", size=42)
