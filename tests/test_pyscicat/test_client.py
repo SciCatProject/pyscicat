@@ -253,4 +253,3 @@ def test_append_slash_base_url():
             **ownable.model_dump(),
         )
         assert scicat.upload_sample(sample) == "gargleblaster2"
-
