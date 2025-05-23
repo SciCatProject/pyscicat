@@ -601,6 +601,34 @@ class ScicatClient:
     get_datasets = datasets_get_many
     find_datasets = datasets_get_many
 
+    def samples_get_many(self, filter_fields: Optional[dict] = None) -> Optional[dict]:
+        """
+        Gets samples using the simple fiter mechanism. This
+        is appropriate when you do not require paging or text search, but
+        want to be able to limit results based on items in the Sample object.
+
+        For example, a search for Samples of a given ownerGroup would have
+        ```python
+        filterField = {"ownerGroup": "1234"}
+        ```
+        If you want to search on partial strings, you can use "like":
+        ```python
+        filterField = {"ownerGroup": {"like":"123"}}
+        ```
+
+        Parameters
+        ----------
+        filter_fields : dict
+            Dictionary of filtering fields. Must be json serializable.
+        """
+        if filter_fields is None:
+            filter_fields = {}
+        filter_field_str = json.dumps(filter_fields)
+        endpoint = f'Samples?filter={{"where":{filter_field_str}}}'
+        return self._call_endpoint(
+            cmd="get", endpoint=endpoint, operation="samples_get_many"
+        )
+
     def published_data_get_many(self, filter=None) -> Optional[dict]:
         """
         retrieve all the published data using the simple fiter mechanism. This
