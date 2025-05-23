@@ -243,7 +243,7 @@ def test_append_slash_base_url():
                 sampleCharacteristics={"a": "field"},
                 **ownable.model_dump(),
             )
-            assert scicat.upload_sample(sample) == "gargleblaster"
+            assert scicat.samples_create(sample) == "gargleblaster"
 
             scicat = from_credentials(url, "Zaphod", "heartofgold")
             # Test by creating a Sample
@@ -253,4 +253,4 @@ def test_append_slash_base_url():
                 sampleCharacteristics={"a": "field"},
                 **ownable.model_dump(),
             )
-            assert scicat.upload_sample(sample) == "gargleblaster"
+            assert scicat.samples_create(sample) == "gargleblaster"

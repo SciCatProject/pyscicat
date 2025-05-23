@@ -71,7 +71,7 @@ sample = Sample(
     isPublished=False,
     **ownable.model_dump()
 )
-sample_id = client.upload_sample(sample)  # sample_id == "gargleblaster"
+sample_id = client.samples_create(sample)  # sample_id == "gargleblaster"
 ```
 
 ## Upload a Datablock
