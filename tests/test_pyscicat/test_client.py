@@ -237,19 +237,19 @@ def test_append_slash_base_url():
         scicat = from_token(slashless_url, "a_token")
         # Test by creating a Sample
         sample = Sample(
-            sampleId="gargleblaster1",
+            sampleId="gargleblaster",
             description="Gargleblaster",
             sampleCharacteristics={"a": "field"},
             **ownable.model_dump(),
         )
-        assert scicat.upload_sample(sample) == "gargleblaster1"
+        assert scicat.upload_sample(sample) == "gargleblaster"
 
         scicat = from_credentials(slashless_url, "Zaphod", "heartofgold")
         # Test by creating a Sample
         sample = Sample(
-            sampleId="gargleblaster2",
+            sampleId="gargleblaster",
             description="Gargleblaster",
             sampleCharacteristics={"a": "field"},
             **ownable.model_dump(),
         )
-        assert scicat.upload_sample(sample) == "gargleblaster2"
+        assert scicat.upload_sample(sample) == "gargleblaster"
