@@ -174,12 +174,12 @@ def test_get_dataset():
             accessGroups=["deep_though"],
         )
         mock_request.get(
-            local_url + "Datasets/123", json=dataset.dict(exclude_none=True)
+            local_url + "Datasets/123", json=dataset.model_dump(exclude_none=True)
         )
 
         client = from_token(base_url=local_url, token="a_token")
         retrieved = client.datasets_get_one("123")
-        assert retrieved == dataset.dict(exclude_none=True)
+        assert retrieved == dataset.model_dump(exclude_none=True)
 
 
 def test_get_nonexistent_dataset():
