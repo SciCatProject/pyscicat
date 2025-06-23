@@ -4,7 +4,7 @@ Pyscicat is a python client library for interacting with the [SciCat backend](ht
 
 Documentation for Pyscicat is [available here](https://scicatproject.github.io/pyscicat/).
 
-### Basic usage example
+## Basic usage example
 
 ```python
 from datetime import datetime
@@ -47,7 +47,7 @@ sample = Sample(
 sample_id = client.samples_create(sample)
 ```
 
-### Notes
+## Notes
 
 To develop with SciCatLive, connect to your local running instance with:
 
