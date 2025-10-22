@@ -597,6 +597,8 @@ class ScicatClient:
         self,
         filter_fields: Optional[dict] = None,
         include_fields: Optional[list] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None
     ) -> Optional[list[dict]]:
         """
         Gets datasets using the simple filter mechanism. This
@@ -622,8 +624,23 @@ class ScicatClient:
         ----------
         filter_fields : dict
             Dictionary of filtering fields. Must be json serializable.
+
+        skip : int
+            number of items to skip
+
+        limit : int
+            number of items to return
         """
         filter = {}
+
+        limits = {}
+        if skip is not None:
+            limits["skip"] = skip
+        if limit is not None:
+            limits["limit"] = limit
+            limits["order"] = "creationTime:desc"
+        filter["limits"] = limits
+
         if filter_fields is not None:
             filter["where"] = filter_fields
         if include_fields is not None:
@@ -747,7 +764,7 @@ class ScicatClient:
 
     def datasets_attachments_get_one(self, pid: str) -> Optional[list[dict]]:
         """
-        Gets external links for the dataset with the pid provided.
+        Gets attachments for the dataset with the pid provided.
 
         Parameters
         ----------
