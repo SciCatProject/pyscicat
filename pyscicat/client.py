@@ -598,7 +598,7 @@ class ScicatClient:
         filter_fields: Optional[dict] = None,
         include_fields: Optional[list] = None,
         skip: Optional[int] = None,
-        limit: Optional[int] = None
+        limit: Optional[int] = None,
     ) -> Optional[list[dict]]:
         """
         Gets datasets using the simple filter mechanism. This
