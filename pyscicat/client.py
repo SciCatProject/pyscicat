@@ -88,37 +88,21 @@ class ScicatClient:
             self._headers["Authorization"] = "Bearer {}".format(self._token)
 
     def _send_to_scicat(
-        self,
-        cmd: str,
-        endpoint: str,
-        data: Optional[BaseModel] = None,
-        send_token_as_param: bool = True,
+        self, cmd: str, endpoint: str, data: Optional[BaseModel] = None
     ):
         """sends a command to the SciCat API server using url and token, returns the response JSON
         Get token with the getToken method"""
         endpoint_url = "/".join(s.strip("/") for s in [self._base_url, endpoint])
-        if send_token_as_param:
-            return requests.request(
-                method=cmd,
-                url=endpoint_url,
-                json=data.model_dump(exclude_none=True) if data is not None else None,
-                params={"access_token": self._token},
-                headers=self._headers,
-                timeout=self._timeout_seconds,
-                stream=False,
-                verify=True,
-            )
-
-        else:
-            return requests.request(
-                method=cmd,
-                url=endpoint_url,
-                json=data.model_dump(exclude_none=True) if data is not None else None,
-                headers=self._headers,
-                timeout=self._timeout_seconds,
-                stream=False,
-                verify=True,
-            )
+        return requests.request(
+            method=cmd,
+            url=endpoint_url,
+            json=data.model_dump(exclude_none=True) if data is not None else None,
+            params={"access_token": self._token},
+            headers=self._headers,
+            timeout=self._timeout_seconds,
+            stream=False,
+            verify=True,
+        )
 
     def login(self):
         """Attempts to authenticate using the stored username and password.
@@ -134,14 +118,8 @@ class ScicatClient:
         endpoint: str,
         data: Optional[BaseModel] = None,
         operation: str = "",
-        send_token_as_param: bool = True,
     ) -> Optional[Union[dict, list[dict]]]:
-        response = self._send_to_scicat(
-            cmd=cmd,
-            endpoint=endpoint,
-            data=data,
-            send_token_as_param=send_token_as_param,
-        )
+        response = self._send_to_scicat(cmd=cmd, endpoint=endpoint, data=data)
 
         result = response.json() if len(response.content) > 0 else None
         if not response.ok:
@@ -152,26 +130,6 @@ class ScicatClient:
             operation,
             f"pid={result['pid']}" if result and "pid" in result else "",
         )
-        return result
-
-    def _call_endpoint_expecting_text(
-        self,
-        cmd: str,
-        endpoint: str,
-        data: Optional[BaseModel] = None,
-        operation: str = "",
-        send_token_as_param: bool = True,
-    ) -> Optional[str]:
-        response = self._send_to_scicat(
-            cmd=cmd,
-            endpoint=endpoint,
-            data=data,
-            send_token_as_param=send_token_as_param,
-        )
-        result = response.text if len(response.content) > 0 else None
-        if not response.ok:
-            raise ScicatCommError(f"Error in operation {operation}: {result}")
-        logger.info("Operation {operation} successful: %s", result)
         return result
 
     def datasets_create(self, dataset: Dataset) -> str:
@@ -600,7 +558,7 @@ class ScicatClient:
 
         This function was renamed.
         It is still accessible with the original name for backward compatibility
-        The original names were find_datasets_full_query and get_datasets_full_query
+        The original name was find_datasets_full_query and get_datasets_full_query
 
         Parameters
         ----------
@@ -987,120 +945,6 @@ class ScicatClient:
         )
 
     delete_dataset = datasets_delete
-
-    def admin_elasticsearch_createindex(self, index: str = "dataset") -> Optional[str]:
-        """
-        Create an Elasticsearch index by name
-
-        Parameters
-        ----------
-        index : str
-            Index name (defaults to 'dataset')
-
-        Returns
-        -------
-        dict
-            response from SciCat backend
-        """
-        result = self._call_endpoint_expecting_text(
-            cmd="post",
-            operation="admin_elasticsearch_createindex",
-            endpoint=f"elastic-search/create-index?index={index}",
-            send_token_as_param=False,
-        )
-        return result
-
-    def admin_elasticsearch_syncdatabase(self, index: str) -> Optional[str]:
-        """
-        Run the database sync operation for Elasticsearch with the given index
-
-        Parameters
-        ----------
-        index : str
-            Index name
-
-        Returns
-        -------
-        dict
-            response from SciCat backend
-        """
-        result = self._call_endpoint_expecting_text(
-            cmd="post",
-            endpoint=f"elastic-search/sync-database?index={index}",
-            operation="admin_elasticsearch_syncdatabase",
-            send_token_as_param=False,
-        )
-        return result
-
-    def admin_elasticsearch_deleteindex(self, index: str = "dataset") -> Optional[str]:
-        """
-        Delete an Elasticsearch index by name
-
-        Parameters
-        ----------
-        index : str
-            Index name (defaults to 'dataset')
-
-        Returns
-        -------
-        dict
-            response from SciCat backend
-        """
-        result = self._call_endpoint_expecting_text(
-            cmd="post",
-            endpoint=f"elastic-search/delete-index?index={index}",
-            operation="admin_elasticsearch_deleteindex",
-            send_token_as_param=False,
-        )
-        return result
-
-    def admin_elasticsearch_getindex(self, index: str) -> Optional[dict]:
-        """
-        Get an Elasticsearch index by name
-
-        Parameters
-        ----------
-        index : str
-            Index name
-
-        Returns
-        -------
-        dict
-            response from SciCat backend
-        """
-        return cast(
-            Optional[dict],
-            self._call_endpoint(
-                cmd="get",
-                endpoint=f"elastic-search/get-index?index={index}",
-                operation="admin_elasticsearch_getindex",
-                send_token_as_param=False,  # This endpoint will fail if given access_token as a parameter.
-            ),
-        )
-
-    def admin_elasticsearch_updateindex(self, index: str = "dataset") -> Optional[dict]:
-        """
-        Update an Elasticsearch index by name
-
-        Parameters
-        ----------
-        index : str
-            Index name (defaults to 'dataset')
-
-        Returns
-        -------
-        dict
-            response from SciCat backend
-        """
-        return cast(
-            Optional[dict],
-            self._call_endpoint(
-                cmd="post",
-                endpoint=f"elastic-search/update-index?index={index}",
-                operation="admin_elasticsearch_updateindex",
-                send_token_as_param=False,  # This endpoint will fail if given access_token as a parameter.
-            ),
-        )
 
 
 def get_file_size(pathobj: Path):
