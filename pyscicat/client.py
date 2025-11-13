@@ -104,6 +104,23 @@ class ScicatClient:
             verify=True,
         )
 
+    def _make_limits(
+        self,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        order_by: Optional[str] = None,
+    ) -> str:
+        """Given the optional components, return a string representation of the standard limit filter JSON for a query."""
+        limits = {}
+        if skip is not None:
+            limits["skip"] = skip
+        if limit is not None:
+            limits["limit"] = limit
+            limits["order"] = "createdAt:desc"
+        if order_by is not None:
+            limits["order"] = order_by
+        return json.dumps(limits)
+
     def login(self):
         """Attempts to authenticate using the stored username and password.
         Does not check if authentication has already occured."""
@@ -543,7 +560,11 @@ class ScicatClient:
         return result["proposalId"]
 
     def datasets_find(
-        self, skip: int = 0, limit: int = 25, query_fields: Optional[dict] = None
+        self,
+        skip: int = 0,
+        limit: int = 25,
+        query_fields: Optional[dict] = None,
+        order_by: Optional[str] = None,
     ) -> Optional[list[dict]]:
         """
         Gets datasets using the fullQuery mechanism of SciCat. This is
@@ -575,7 +596,9 @@ class ScicatClient:
         if not query_fields:
             query_fields = {}
         query_field_str = json.dumps(query_fields)
-        query = f'fields={query_field_str}&limits={{"skip":{skip},"limit":{limit},"order":"creationTime:desc"}}'
+        limit_str = self._make_limits(skip, limit, order_by)
+
+        query = f"fields={query_field_str}&limits={limit_str}"
 
         return cast(
             Optional[list[dict]],
@@ -599,11 +622,12 @@ class ScicatClient:
         include_fields: Optional[list] = None,
         skip: Optional[int] = None,
         limit: Optional[int] = None,
+        order_by: Optional[str] = None,
     ) -> Optional[list[dict]]:
         """
-        Gets datasets using the simple filter mechanism. This
-        is appropriate when you do not require paging or text search, but
-        want to be able to limit results based on items in the Dataset object.
+        Gets datasets using the simple filter mechanism.
+        You should favor this call when your search is not complex.
+        (For resource-intensive queries use datasets_find instead.)
         This function has been renamed and the old name has been mantained for backward compatibility
         The previous names are find_datasets and get_datasets
 
@@ -630,16 +654,15 @@ class ScicatClient:
 
         limit : int
             number of items to return
+            if this is set, and "order_by" is not, "order_by" gets the default "createdAt:desc"
+
+        order_by : str
+            The field to use when sorting results, and the sort direction.
+            Composed of a string "field:direction" , where "direction" is "asc" or "desc".
         """
         filter = {}
 
-        limits = {}
-        if skip is not None:
-            limits["skip"] = skip
-        if limit is not None:
-            limits["limit"] = limit
-            limits["order"] = "creationTime:desc"
-        filter["limits"] = limits
+        filter["limits"] = self._make_limits(skip, limit, order_by)
 
         if filter_fields is not None:
             filter["where"] = filter_fields
@@ -664,7 +687,11 @@ class ScicatClient:
     find_datasets = datasets_get_many
 
     def samples_get_many(
-        self, filter_fields: Optional[dict] = None
+        self,
+        filter_fields: Optional[dict] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        order_by: Optional[str] = None,
     ) -> Optional[list[dict]]:
         """
         Gets samples using the simple filter mechanism. This
@@ -688,11 +715,23 @@ class ScicatClient:
         ----------
         filter_fields : dict
             Dictionary of filtering fields. Must be json serializable.
+
+        skip : int
+            number of items to skip
+
+        limit : int
+            number of items to return
+            if this is set, and "order_by" is not, "order_by" gets the default "createdAt:desc"
+
+        order_by : str
+            The field to use when sorting results, and the sort direction.
+            Composed of a string "field:direction" , where "direction" is "asc" or "desc".
         """
         if filter_fields is None:
             filter_fields = {}
         filter_field_str = json.dumps(filter_fields)
-        endpoint = f'Samples?filter={{"where":{filter_field_str}}}'
+        limit_str = self._make_limits(skip, limit, order_by)
+        endpoint = f'Samples?filter={{"where":{filter_field_str},"limits":{limit_str}}}'
 
         return cast(
             Optional[list[dict]],
