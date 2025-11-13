@@ -324,7 +324,7 @@ class ScicatClient:
 
     def datasets_attachment_create(
         self, attachment: Attachment, datasetType: str = "Datasets"
-    ) -> dict:
+    ) -> Attachment:
         """
         Create a new Attachment for a dataset.
         Note that datasetType can be provided to determine the type of dataset
@@ -339,7 +339,7 @@ class ScicatClient:
             Attachment to upload
 
         datasetType : str
-            Type of dataset to upload to, default is `RawDatasets`
+            Type of dataset to upload to, default is `Datasets`
         Raises
         ------
         ScicatCommError
@@ -347,13 +347,16 @@ class ScicatClient:
         """
         assert isinstance(attachment.datasetId, str)
         endpoint = f"{datasetType}/{quote_plus(attachment.datasetId)}/attachments"
-        result = self._call_endpoint(
-            cmd="post",
-            endpoint=endpoint,
-            data=attachment,
-            operation="datasets_attachment_create",
+        result = cast(
+            Optional[Attachment],
+            self._call_endpoint(
+                cmd="post",
+                endpoint=endpoint,
+                data=attachment,
+                operation="datasets_attachment_create",
+            ),
         )
-        assert isinstance(result, dict)
+        assert result is not None
         return result
 
     """
