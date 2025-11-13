@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from pyscicat.model import (
     Attachment,
     CreateDatasetOrigDatablockDto,
+    OrigDatablock,
     Dataset,
     Instrument,
     Proposal,
@@ -234,9 +235,9 @@ class ScicatClient:
 
     def datasets_origdatablock_create(
         self, dataset_id: str, datablockDto: CreateDatasetOrigDatablockDto
-    ) -> dict:
+    ) -> OrigDatablock:
         """
-        Create a new SciCat Dataset OrigDatablock
+        Create a new SciCat OrigDatablock for an existing DataSet
         This function has been renamed.
         It is still accessible with the original name for backward compatibility
         The original names were create_dataset_origdatablock and upload_dataset_origdatablock
@@ -258,13 +259,17 @@ class ScicatClient:
 
         """
         endpoint = f"Datasets/{quote_plus(dataset_id)}/origdatablocks"
-        result = self._call_endpoint(
-            cmd="post",
-            endpoint=endpoint,
-            data=datablockDto,
-            operation="datasets_origdatablock_create",
+        result = cast(
+            Optional[OrigDatablock],
+            self._call_endpoint(
+                cmd="post",
+                endpoint=endpoint,
+                data=datablockDto,
+                operation="datasets_origdatablock_create",
+            ),
         )
-        assert isinstance(result, dict)
+
+        assert result is not None
         return result
 
     """
