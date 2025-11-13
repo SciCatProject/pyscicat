@@ -127,7 +127,8 @@ class ScicatClient:
         limit: Optional[int] = None,
         order_by: Optional[str] = None,
     ) -> str:
-        """Given the optional components, return a string representation of the standard limit filter JSON for a query."""
+        """Given the optional components, return a string representation
+        of the standard limit filter JSON for a query."""
         limits = {}
         if skip is not None:
             limits["skip"] = skip
