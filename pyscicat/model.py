@@ -231,7 +231,7 @@ class Attachment(Ownable):
     id: Optional[str] = None
     datasetId: Optional[str] = None
     proposalId: Optional[str] = None
-    sampleid: Optional[str] = None
+    sampleId: Optional[str] = None
     thumbnail: Optional[str] = None
     caption: str
 
