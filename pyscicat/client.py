@@ -121,7 +121,6 @@ class ScicatClient:
                 verify=True,
             )
 
-
     def _make_limits(
         self,
         skip: Optional[int] = None,
@@ -138,7 +137,6 @@ class ScicatClient:
         if order_by is not None:
             limits["order"] = order_by
         return json.dumps(limits)
-
 
     def login(self):
         """Attempts to authenticate using the stored username and password.
