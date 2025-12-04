@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pyscicat.client import ScicatClient
-from pyscicat.model import DatasetType, Ownable, RawDataset
+from pyscicat.model import DatasetType, DatasetUpdateDto, Ownable, RawDataset
 
 """
 These test_pyscicat do not use mocks and are designed to connect
@@ -33,7 +33,6 @@ def test_client():
 def test_upload_dataset():
     ownable = Ownable(ownerGroup="ingestor", accessGroups=[])
     payload = RawDataset(
-        datasetName="a new guide book",
         size=42,
         packedSize=0,
         owner=os.environ["SCICAT_USER"],
@@ -43,6 +42,7 @@ def test_upload_dataset():
         instrumentId="earth",
         proposalId="deepthought",
         dataFormat="planet",
+        datasetName="Douglas' Dataset",
         principalInvestigator="A. Mouse",
         sourceFolder="/foo/bar",
         scientificMetadata={"type": "string", "value": {"a": "field"}},
@@ -78,7 +78,7 @@ def test_update_dataset():
     datasets = sci_clie.get_datasets({})
     assert datasets is not None
     pid = datasets[0]["pid"]
-    payload = RawDataset(
+    payload = DatasetUpdateDto(
         size=142,
         owner="slartibartfast",
         ownerGroup="Magrateheans",
@@ -88,10 +88,11 @@ def test_update_dataset():
         instrumentId="earth",
         proposalId="deepthought",
         dataFormat="planet",
+        datasetName="Douglas' Dataset",
         principalInvestigator="A. Mouse",
         sourceFolder="/foo/bar",
         scientificMetadata={"a": "field"},
         sampleId="gargleblaster",
         accessGroups=["Vogons"],
     )
-    sci_clie.update_dataset(payload, pid)
+    sci_clie.datasets_update(payload, pid)

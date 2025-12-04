@@ -110,66 +110,144 @@ class Instrument(MongoQueryable):
     customMetadata: Optional[dict] = None
 
 
-class Dataset(Ownable):
+class RelationshipClass(BaseModel):
     """
-    A dataset in SciCat, base class for derived and raw datasets
+    Decscribes a relationship between datasets
+    """
+
+    pid: str
+    relationship: str
+
+
+class DatasetLifeCycleClass(BaseModel):
+    """
+    Describes the lifecycle of a dataset
+    """
+
+    archivable: Optional[str] = None
+    archiveRetentionTime: Optional[str] = None  # datetime
+    archiveReturnMessage: Optional[dict] = None
+    archiveStatusMessage: Optional[str] = None
+    dateOfDiskPurging: Optional[str] = None  # datetime
+    dateOfPublishing: Optional[str] = None  # datetime
+    exportedTo: Optional[str] = None
+    isOnCentralDisk: Optional[str] = None
+    publishable: Optional[str] = None
+    publishedOn: Optional[str] = None  # datetime
+    retrievable: Optional[str] = None
+    retrieveReturnMessage: Optional[dict] = None
+    retrieveStatusMessage: Optional[str] = None
+    retrieveIntegrityCheck: Optional[str] = None
+    storageLocation: Optional[str] = None
+
+
+class DatasetCommon(Ownable):
+    """
+    The common fields in a standard DataSet, a RawDataset, and a DerivedDataset
     """
 
     pid: Optional[str] = None
     classification: Optional[str] = None
+    comment: Optional[str] = None
     contactEmail: str
     creationTime: str  # datetime
-    datasetName: Optional[str] = None
+    datasetName: str
+    datasetlifecycle: Optional[DatasetLifeCycleClass] = None
+    dataQualityMetrics: Optional[int] = None
     description: Optional[str] = None
     history: Optional[List[dict]] = (
-        None  # list of foreigh key ids to the Messages table
+        None  # list of foreign key ids to the Messages table
     )
     instrumentId: Optional[str] = None
+    investigator: Optional[str] = None
     isPublished: Optional[bool] = False
+    jobLogData: Optional[str] = None
+    jobParameters: Optional[dict] = None
     keywords: Optional[List[str]] = None
     license: Optional[str] = None
     numberOfFiles: Optional[int] = None
     numberOfFilesArchived: Optional[int] = None
     orcidOfOwner: Optional[str] = None
-    owner: str
     ownerEmail: Optional[str] = None
     packedSize: Optional[int] = None
+    relationships: Optional[List[RelationshipClass]] = None
+    runNumber: Optional[str] = None
+    scientificMetadata: Optional[Dict] = None
     sharedWith: Optional[List[str]] = None
     size: Optional[int] = None
     sourceFolder: str
     sourceFolderHost: Optional[str] = None
     techniques: Optional[List[dict]] = None  # with {'pid':pid, 'name': name} as entries
-    type: DatasetType
     validationStatus: Optional[str] = None
     version: Optional[str] = None
-    scientificMetadata: Optional[Dict] = None
 
 
-class RawDataset(Dataset):
+class Dataset(DatasetCommon):
+    """
+    A dataset in SciCat, base class for derived and raw datasets
+    """
+
+    creationLocation: Optional[str] = None  # Optional for a standard dataset
+    dataFormat: Optional[str] = None
+    endTime: Optional[str] = None  # datetime
+    inputDatasets: Optional[List[str]] = None
+    owner: Optional[str] = None
+    principalInvestigators: Optional[List[str]] = None
+    proposalIds: Optional[List[str]] = None
+    sampleIds: Optional[List[str]] = None
+    scientificMetadataSchema: Optional[str] = None
+    type: DatasetType
+    usedSoftware: Optional[List[str]] = None
+
+
+class RawDataset(DatasetCommon):
     """
     Raw datasets from which derived datasets are... derived.
     """
 
-    type: DatasetType = DatasetType.raw
     creationLocation: str  # Required for a raw dataset
     dataFormat: Optional[str] = None
     endTime: Optional[str] = None  # datetime
+    inputDatasets: Optional[List[str]] = None
+    owner: str
     principalInvestigator: str  # Required for a raw dataset
     proposalId: Optional[str] = None
     sampleId: Optional[str] = None
+    type: DatasetType = DatasetType.raw
+    usedSoftware: Optional[List[str]] = None
 
 
-class DerivedDataset(Dataset):
+class DerivedDataset(DatasetCommon):
     """
     Derived datasets which have been generated based on one or more raw datasets
     """
 
-    investigator: str
-    inputDatasets: List[str]
-    usedSoftware: List[str]
-    jobParameters: Optional[dict] = None
-    jobLogData: Optional[str] = None
+    inputDatasets: List[str] = []
+    owner: str
+    proposalId: Optional[str] = None
     type: DatasetType = DatasetType.derived
+    usedSoftware: List[str] = []
+
+
+class DatasetUpdateDto(DatasetCommon):
+    """
+    A dataset in the form sent to the update APIs, where almost everything is optional
+    """
+
+    contactEmail: Optional[str] = None
+    creationTime: Optional[str] = None  # datetime
+    creationLocation: Optional[str] = None
+    dataFormat: Optional[str] = None
+    datasetName: Optional[str] = None
+    endTime: Optional[str] = None  # datetime
+    inputDatasets: Optional[List[str]] = None
+    owner: Optional[str] = None
+    principalInvestigator: Optional[str] = None
+    proposalId: Optional[str] = None
+    sampleId: Optional[str] = None
+    sourceFolder: Optional[str] = None
+    type: Optional[DatasetType] = None
+    usedSoftware: Optional[List[str]] = None
 
 
 class DataFile(MongoQueryable):
@@ -231,7 +309,7 @@ class Attachment(Ownable):
     id: Optional[str] = None
     datasetId: Optional[str] = None
     proposalId: Optional[str] = None
-    sampleid: Optional[str] = None
+    sampleId: Optional[str] = None
     thumbnail: Optional[str] = None
     caption: str
 
