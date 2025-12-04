@@ -240,7 +240,8 @@ class ScicatClient:
     upload_new_dataset = datasets_create
     create_dataset = datasets_create
 
-    def datasets_update(self, dataset: DatasetUpdateDto, pid: str) -> str:
+    # DatasetUpdateDto is needed here because everything is optional when updating
+    def datasets_update(self, dataset: Union[Dataset, RawDataset, DerivedDataset, DatasetUpdateDto], pid: str) -> str:
         """Updates an existing dataset
         This function was renamed.
         It is still accessible with the original name for backward compatibility
