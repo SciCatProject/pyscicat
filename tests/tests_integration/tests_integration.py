@@ -33,7 +33,6 @@ def test_client():
 def test_upload_dataset():
     ownable = Ownable(ownerGroup="ingestor", accessGroups=[])
     payload = RawDataset(
-        datasetName="a new guide book",
         size=42,
         packedSize=0,
         owner=os.environ["SCICAT_USER"],
@@ -43,6 +42,7 @@ def test_upload_dataset():
         instrumentId="earth",
         proposalId="deepthought",
         dataFormat="planet",
+        datasetName="Douglas' Dataset",
         principalInvestigator="A. Mouse",
         sourceFolder="/foo/bar",
         scientificMetadata={"type": "string", "value": {"a": "field"}},
@@ -88,6 +88,7 @@ def test_update_dataset():
         instrumentId="earth",
         proposalId="deepthought",
         dataFormat="planet",
+        datasetName="Douglas' Dataset",
         principalInvestigator="A. Mouse",
         sourceFolder="/foo/bar",
         scientificMetadata={"a": "field"},

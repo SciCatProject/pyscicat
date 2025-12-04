@@ -33,6 +33,7 @@ dataset = RawDataset(
     instrumentId="earth",
     proposalId="deepthought",
     dataFormat="planet",
+    datasetName="Douglas' Dataset",
     principalInvestigator="A. Mouse",
     sourceFolder="/foo/bar",
     scientificMetadata={"a": "field"},
