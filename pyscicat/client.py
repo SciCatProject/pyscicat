@@ -15,6 +15,8 @@ from pyscicat.model import (
     Attachment,
     CreateDatasetOrigDatablockDto,
     Dataset,
+    RawDataset,
+    DerivedDataset,
     Instrument,
     OrigDatablock,
     Proposal,
@@ -193,7 +195,7 @@ class ScicatClient:
         logger.info("Operation {operation} successful: %s", result)
         return result
 
-    def datasets_create(self, dataset: Dataset) -> str:
+    def datasets_create(self, dataset: Dataset | RawDataset | DerivedDataset) -> str:
         """
         Upload a new dataset. Uses the generic dataset endpoint.
         Relies on the endpoint to sense the dataset type
