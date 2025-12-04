@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pyscicat.client import ScicatClient
-from pyscicat.model import DatasetType, Ownable, RawDataset, DatasetUpdateDto
+from pyscicat.model import DatasetType, DatasetUpdateDto, Ownable, RawDataset
 
 """
 These test_pyscicat do not use mocks and are designed to connect

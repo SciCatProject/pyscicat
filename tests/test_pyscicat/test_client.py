@@ -135,7 +135,7 @@ def test_scicat_ingest():
 
         # Update record
         dataset.principalInvestigator = "B. Turtle"
-        dataset_id_2 = scicat.update_dataset(dataset, dataset_id)
+        dataset_id_2 = scicat.datasets_update(dataset, dataset_id)
         assert dataset_id_2 == dataset_id
 
         # Datablock with DataFiles

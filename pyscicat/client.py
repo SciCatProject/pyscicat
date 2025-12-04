@@ -15,12 +15,12 @@ from pyscicat.model import (
     Attachment,
     CreateDatasetOrigDatablockDto,
     Dataset,
-    RawDataset,
-    DerivedDataset,
     DatasetUpdateDto,
+    DerivedDataset,
     Instrument,
     OrigDatablock,
     Proposal,
+    RawDataset,
     Sample,
 )
 
