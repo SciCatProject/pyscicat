@@ -110,7 +110,7 @@ class Instrument(MongoQueryable):
     customMetadata: Optional[dict] = None
 
 
-class RelationshipClass:
+class RelationshipClass(BaseModel):
     """
     Decscribes a relationship between datasets
     """
@@ -119,7 +119,7 @@ class RelationshipClass:
     relationship: str
 
 
-class DatasetLifeCycleClass:
+class DatasetLifeCycleClass(BaseModel):
     """
     Describes the lifecycle of a dataset
     """
