@@ -17,6 +17,7 @@ from pyscicat.model import (
     Dataset,
     RawDataset,
     DerivedDataset,
+    DatasetUpdateDto,
     Instrument,
     OrigDatablock,
     Proposal,
@@ -237,7 +238,7 @@ class ScicatClient:
     upload_new_dataset = datasets_create
     create_dataset = datasets_create
 
-    def datasets_update(self, dataset: Dataset, pid: str) -> str:
+    def datasets_update(self, dataset: DatasetUpdateDto, pid: str) -> str:
         """Updates an existing dataset
         This function was renamed.
         It is still accessible with the original name for backward compatibility

@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from pyscicat.client import ScicatClient
-from pyscicat.model import DatasetType, Ownable, RawDataset
+from pyscicat.model import DatasetType, Ownable, RawDataset, DatasetUpdateDto
 
 """
 These test_pyscicat do not use mocks and are designed to connect
@@ -78,7 +78,7 @@ def test_update_dataset():
     datasets = sci_clie.get_datasets({})
     assert datasets is not None
     pid = datasets[0]["pid"]
-    payload = RawDataset(
+    payload = DatasetUpdateDto(
         size=142,
         owner="slartibartfast",
         ownerGroup="Magrateheans",
@@ -95,4 +95,4 @@ def test_update_dataset():
         sampleId="gargleblaster",
         accessGroups=["Vogons"],
     )
-    sci_clie.update_dataset(payload, pid)
+    sci_clie.datasets_update(payload, pid)

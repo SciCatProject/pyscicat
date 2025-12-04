@@ -178,9 +178,26 @@ class DatasetCommon(Ownable):
     sourceFolder: str
     sourceFolderHost: Optional[str] = None
     techniques: Optional[List[dict]] = None  # with {'pid':pid, 'name': name} as entries
-    type: DatasetType
     validationStatus: Optional[str] = None
     version: Optional[str] = None
+
+
+class Dataset(DatasetCommon):
+    """
+    A dataset in SciCat, base class for derived and raw datasets
+    """
+
+    creationLocation: Optional[str] = None  # Optional for a standard dataset
+    dataFormat: Optional[str] = None
+    endTime: Optional[str] = None  # datetime
+    inputDatasets: Optional[List[str]] = None
+    owner: Optional[str] = None
+    principalInvestigators: Optional[List[str]] = None
+    proposalIds: Optional[List[str]] = None
+    sampleIds: Optional[List[str]] = None
+    scientificMetadataSchema: Optional[str] = None
+    type: DatasetType
+    usedSoftware: Optional[List[str]] = None
 
 
 class RawDataset(DatasetCommon):
@@ -212,20 +229,23 @@ class DerivedDataset(DatasetCommon):
     usedSoftware: List[str] = []
 
 
-class Dataset(DatasetCommon):
+class DatasetUpdateDto(DatasetCommon):
     """
-    A dataset in SciCat, base class for derived and raw datasets
+    A dataset in the form sent to the update APIs, where almost everything is optional
     """
-
-    creationLocation: Optional[str]  # Optional for a standard dataset
+    contactEmail: Optional[str] = None
+    creationTime: Optional[str] = None  # datetime
+    creationLocation: Optional[str] = None
     dataFormat: Optional[str] = None
+    datasetName: Optional[str] = None
     endTime: Optional[str] = None  # datetime
     inputDatasets: Optional[List[str]] = None
     owner: Optional[str] = None
-    principalInvestigators: Optional[List[str]] = None
-    proposalIds: Optional[List[str]] = None
-    sampleIds: Optional[List[str]] = None
-    scientificMetadataSchema: Optional[str] = None
+    principalInvestigator: Optional[str] = None
+    proposalId: Optional[str] = None
+    sampleId: Optional[str] = None
+    sourceFolder: Optional[str] = None
+    type: Optional[DatasetType] = None
     usedSoftware: Optional[List[str]] = None
 
 
