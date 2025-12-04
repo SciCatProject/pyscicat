@@ -126,7 +126,7 @@ class DatasetLifeCycleClass(BaseModel):
 
     archivable: Optional[str] = None
     archiveRetentionTime: Optional[str] = None  # datetime
-    archiveReturnMessage: Optional[str] = None
+    archiveReturnMessage: Optional[dict] = None
     archiveStatusMessage: Optional[str] = None
     dateOfDiskPurging: Optional[str] = None  # datetime
     dateOfPublishing: Optional[str] = None  # datetime
@@ -135,7 +135,7 @@ class DatasetLifeCycleClass(BaseModel):
     publishable: Optional[str] = None
     publishedOn: Optional[str] = None  # datetime
     retrievable: Optional[str] = None
-    retrieveReturnMessage: Optional[str] = None
+    retrieveReturnMessage: Optional[dict] = None
     retrieveStatusMessage: Optional[str] = None
     retrieveIntegrityCheck: Optional[str] = None
     storageLocation: Optional[str] = None
