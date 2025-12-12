@@ -9,7 +9,7 @@ from typing import Optional, Union, cast, TypeVar, Type
 from urllib.parse import quote_plus
 
 import requests
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 from pyscicat.model import (
     Attachment,
@@ -188,14 +188,21 @@ class ScicatClient:
             )
             return None
         try:
-            result = response.json()
-            logger.info(
-                "Operation '%s' successful%s",
-                operation,
-                f", _id={result['_id']}" if "_id" in result else "",
-            )
-            print(response.text)
-            return model(**result)
+            adapter = TypeAdapter(model)
+            result = adapter.validate_json(response.content.decode("utf-8"))
+            if not isinstance(result, list):
+                logger.info(
+                    "Operation '%s' successful%s",
+                    operation,
+                    f", pid={getattr(result, 'pid', 'unknown')}" if hasattr(result, 'pid') else "",
+                )
+            else:
+                logger.info(
+                    "Operation '%s' successful, returning list of %d items",
+                    operation,
+                    len(result),
+                )
+            return result
         except json.JSONDecodeError:
             raise ScicatCommError(
                 f"Error in operation {operation}: Unable to decode response as JSON: {response.content.decode('utf-8')}"
