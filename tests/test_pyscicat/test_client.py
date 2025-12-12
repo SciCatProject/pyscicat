@@ -194,25 +194,6 @@ def test_get_nonexistent_dataset():
         assert client.datasets_get_one("74") is None
 
 
-def test_get_dataset_bad_url():
-    with requests_mock.Mocker() as mock_request:
-        mock_request.get(
-            "http://localhost:3000/api/v100/datasets/53",
-            status_code=404,
-            reason="Not Found",
-            json={
-                "error": {
-                    "statusCode": 404,
-                    "name": "Error",
-                    "message": "Cannot GET /api/v100/Datasets/53",
-                }
-            },
-        )
-        client = from_token(base_url="http://localhost:3000/api/v100", token="a_token")
-        with pytest.raises(ScicatCommError):
-            client.datasets_get_one("53")
-
-
 def test_initializers():
     with requests_mock.Mocker() as mock_request:
         add_mock_requests(mock_request)

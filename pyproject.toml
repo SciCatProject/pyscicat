@@ -2,7 +2,6 @@
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
-
 [project]
 name = "pyscicat"
 description = "a python API to communicate with the Scicat API"
