@@ -5,7 +5,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Type, TypeVar, Union, cast
+from typing import Optional, Type, TypeVar, Union
 from urllib.parse import quote_plus
 
 import requests
@@ -189,30 +189,25 @@ class ScicatClient:
                 operation,
             )
             return None
-        try:
-            adapter = TypeAdapter(model)
-            result = adapter.validate_json(response.content.decode("utf-8"))
-            if not isinstance(result, list):
-                logger.info(
-                    "Operation '%s' successful%s",
-                    operation,
-                    (
-                        f", pid={getattr(result, 'pid', 'unknown')}"
-                        if hasattr(result, "pid")
-                        else ""
-                    ),
-                )
-            else:
-                logger.info(
-                    "Operation '%s' successful, returning list of %d items",
-                    operation,
-                    len(result),
-                )
-            return result
-        except json.JSONDecodeError:
-            raise ScicatCommError(
-                f"Error in operation {operation}: Unable to decode response as JSON: {response.content.decode('utf-8')}"
+        adapter = TypeAdapter(model)
+        result = adapter.validate_json(response.content.decode("utf-8"))
+        if not isinstance(result, list):
+            logger.info(
+                "Operation '%s' successful%s",
+                operation,
+                (
+                    f", pid={getattr(result, 'pid', 'unknown')}"
+                    if hasattr(result, "pid")
+                    else ""
+                ),
             )
+        else:
+            logger.info(
+                "Operation '%s' successful, returning list of %d items",
+                operation,
+                len(result),
+            )
+        return result
 
     def _call_endpoint_expecting_text(
         self,
