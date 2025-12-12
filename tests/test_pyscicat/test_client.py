@@ -1,12 +1,10 @@
 from datetime import datetime
 from pathlib import Path
 
-import pytest
 import requests_mock
 
 from pyscicat.client import (
     ScicatClient,
-    ScicatCommError,
     encode_thumbnail,
     from_credentials,
     from_token,
@@ -192,25 +190,6 @@ def test_get_nonexistent_dataset():
         mock_request.get(local_url + "datasets/74", status_code=200, content=b"")
         client = from_token(base_url=local_url, token="a_token")
         assert client.datasets_get_one("74") is None
-
-
-def test_get_dataset_bad_url():
-    with requests_mock.Mocker() as mock_request:
-        mock_request.get(
-            "http://localhost:3000/api/v100/datasets/53",
-            status_code=404,
-            reason="Not Found",
-            json={
-                "error": {
-                    "statusCode": 404,
-                    "name": "Error",
-                    "message": "Cannot GET /api/v100/Datasets/53",
-                }
-            },
-        )
-        client = from_token(base_url="http://localhost:3000/api/v100", token="a_token")
-        with pytest.raises(ScicatCommError):
-            client.datasets_get_one("53")
 
 
 def test_initializers():
