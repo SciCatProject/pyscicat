@@ -235,8 +235,8 @@ class Dataset(DatasetCommon):
     inputDatasets: Optional[List[str]] = None
     owner: Optional[str] = None
     principalInvestigators: Optional[List[str]] = None
-    proposalIds: Optional[List[str | None]] = None
-    sampleIds: Optional[List[str | None]] = None
+    proposalIds: Optional[List[Optional[str]]] = None
+    sampleIds: Optional[List[Optional[str]]] = None
     scientificMetadataSchema: Optional[str] = None
     type: DatasetType
     usedSoftware: Optional[List[str]] = None
