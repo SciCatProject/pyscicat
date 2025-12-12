@@ -84,10 +84,7 @@ def test_scicat_ingest():
 
         # Instrument
         instrument = Instrument(
-            pid="earth",
-            name="Earth",
-            customMetadata={"a": "field"},
-            uniqueName="earth426",
+            pid="earth", name="Earth", customMetadata={"a": "field"}, uniqueName="earth426"
         )
         assert scicat.upload_instrument(instrument) == "earth"
         assert scicat.instruments_create(instrument) == "earth"

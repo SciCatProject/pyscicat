@@ -41,25 +41,44 @@ class User(BaseModel):
     id: str
 
 
-class Proposal(Ownable):
+class ProposalCommon(BaseModel):
     """
-    Defines the purpose of an experiment and links an experiment to principal investigator and main proposer
+    The common fields of Proposal and its operations
     """
 
-    proposalId: str
     pi_email: Optional[str] = None
     pi_firstname: Optional[str] = None
     pi_lastname: Optional[str] = None
-    email: str
     firstname: Optional[str] = None
     lastname: Optional[str] = None
-    title: Optional[str] = None  # required in next backend version
+    title: Optional[str] = None
     abstract: Optional[str] = None
     startTime: Optional[str] = None
     endTime: Optional[str] = None
     MeasurementPeriodList: Optional[List[dict]] = (
         None  # may need updating with the measurement period model
     )
+    metadata: Optional[dict] = None
+    parentProposalId: Optional[str] = None
+    type: Optional[str] = None
+    instrumentIds: Optional[List[str]] = None
+
+
+class ProposalUpdateDto(ProposalCommon):
+    """
+    A proposal in the form sent to the update APIs, where almost everything is optional
+    """
+
+    email: Optional[str] = None
+
+
+class Proposal(Ownable, ProposalCommon):
+    """
+    Defines the purpose of an experiment and links an experiment to principal investigator and main proposer
+    """
+
+    proposalId: str
+    email: str
 
 
 class Sample(Ownable):
@@ -68,15 +87,28 @@ class Sample(Ownable):
     Raw datasets should be linked to such sample definitions.
     """
 
-    sampleId: Optional[str] = None
-    owner: Optional[str] = None
     description: Optional[str] = None
-    sampleCharacteristics: Optional[dict] = None
     isPublished: bool = False
-    datasetsId: Optional[str] = None
-    datasetId: Optional[str] = None
-    rawDatasetId: Optional[str] = None
-    derivedDatasetId: Optional[str] = None
+    owner: Optional[str] = None
+    parentSampleId: Optional[str] = None
+    proposalId: Optional[str] = None
+    sampleCharacteristics: Optional[dict] = None
+    sampleId: Optional[str] = None
+    type: Optional[str] = None
+
+
+class SampleUpdateDto(BaseModel):
+    """
+    A dataset in the form sent to the update APIs, where almost everything is optional
+    """
+
+    description: Optional[str] = None
+    isPublished: Optional[bool] = None
+    owner: Optional[str] = None
+    parentSampleId: Optional[str] = None
+    proposalId: Optional[str] = None
+    sampleCharacteristics: Optional[dict] = None
+    type: Optional[str] = None
 
 
 class Job(MongoQueryable):
@@ -106,9 +138,18 @@ class Instrument(MongoQueryable):
     """
 
     pid: Optional[str] = None
+    customMetadata: Optional[dict] = None
     name: str
     uniqueName: str
+
+
+class InstrumentUpdateDto(BaseModel):
+    """
+    Instrument class, most of this is flexibly definable in customMetadata
+    """
+
     customMetadata: Optional[dict] = None
+    name: str
 
 
 class RelationshipClass(BaseModel):
@@ -125,20 +166,20 @@ class DatasetLifeCycleClass(BaseModel):
     Describes the lifecycle of a dataset
     """
 
-    archivable: Optional[str] = None
+    archivable: Optional[bool] = None
     archiveRetentionTime: Optional[str] = None  # datetime
     archiveReturnMessage: Optional[dict] = None
     archiveStatusMessage: Optional[str] = None
     dateOfDiskPurging: Optional[str] = None  # datetime
     dateOfPublishing: Optional[str] = None  # datetime
     exportedTo: Optional[str] = None
-    isOnCentralDisk: Optional[str] = None
-    publishable: Optional[str] = None
+    isOnCentralDisk: Optional[bool] = None
+    publishable: Optional[bool] = None
     publishedOn: Optional[str] = None  # datetime
-    retrievable: Optional[str] = None
+    retrievable: Optional[bool] = None
     retrieveReturnMessage: Optional[dict] = None
     retrieveStatusMessage: Optional[str] = None
-    retrieveIntegrityCheck: Optional[str] = None
+    retrieveIntegrityCheck: Optional[bool] = None
     storageLocation: Optional[str] = None
 
 
@@ -243,6 +284,7 @@ class DatasetUpdateDto(DatasetCommon):
     endTime: Optional[str] = None  # datetime
     inputDatasets: Optional[List[str]] = None
     owner: Optional[str] = None
+    ownerGroup: Optional[str] = None
     principalInvestigator: Optional[str] = None
     proposalId: Optional[str] = None
     sampleId: Optional[str] = None
@@ -260,7 +302,7 @@ class DataFile(MongoQueryable):
 
     path: str
     size: int
-    time: Optional[str] = None
+    time: str  # datetime
     chk: Optional[str] = None
     uid: Optional[str] = None
     gid: Optional[str] = None
@@ -315,29 +357,50 @@ class Attachment(Ownable):
     caption: str
 
 
-class PublishedData:
+class PublishedDataCommon:
+    """
+    The common fields of Published Data and its operations
+    """
+    abstract: str
+    createdAt: str
+    creator: List[str]
+    dataDescription: str
+    doi: str
+    pidArray: List[str]
+    publicationYear: int
+    publisher: str
+    registeredTime: str
+    resourceType: str
+    status: str
+    thumbnail: Optional[str] = None
+    title: str
+    updatedAt: str
+    url: Optional[str] = None
+
+
+class PublishedData(PublishedDataCommon):
     """
     Published Data with registered DOI
     """
 
-    doi: str
     affiliation: str
-    creator: List[str]
-    publisher: str
-    publicationYear: int
-    title: str
-    url: Optional[str] = None
-    abstract: str
-    dataDescription: str
-    resourceType: str
+    authors: List[str]
+    createdBy: str
     numberOfFiles: Optional[int] = None
     sizeOfArchive: Optional[int] = None
-    pidArray: List[str]
-    authors: List[str]
-    registeredTime: str
-    status: str
-    thumbnail: Optional[str] = None
-    createdBy: str
     updatedBy: str
-    createdAt: str
-    updatedAt: str
+
+
+class PublishedDataObsoleteDto(PublishedDataCommon):
+    """
+    Published Data DTO as used in the obsolete published data API
+    """
+
+    _id: str
+    affiliation: Optional[str] = None
+    authors: Optional[List[str]] = None
+    downloadLink: Optional[str] = None  
+    numberOfFiles: Optional[int] = None
+    relatedPublications: Optional[List[str]] = None
+    scicatUser: Optional[str] = None
+    sizeOfArchive: Optional[int] = None
