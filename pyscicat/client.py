@@ -5,7 +5,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Union, cast, TypeVar, Type
+from typing import Optional, Type, TypeVar, Union, cast
 from urllib.parse import quote_plus
 
 import requests
@@ -154,7 +154,6 @@ class ScicatClient:
         )
         self._headers["Authorization"] = "Bearer {}".format(self._token)
 
-
     T = TypeVar("T")
 
     def _call_endpoint(
@@ -163,7 +162,7 @@ class ScicatClient:
         endpoint: str,
         data: Optional[BaseModel] = None,
         operation: str = "",
-        send_token_as_param: bool = True,        
+        send_token_as_param: bool = True,
         model: Type[T] = dict,
     ) -> Optional[T]:
         response = self._send_to_scicat(
@@ -180,7 +179,10 @@ class ScicatClient:
                     operation,
                 )
                 return None
-            raise ScicatCommError("Error in operation %s: Response code not 'ok'. Response text: %s" % (operation, response.text))
+            raise ScicatCommError(
+                "Error in operation %s: Response code not 'ok'. Response text: %s"
+                % (operation, response.text)
+            )
         if len(response.content) == 0:
             logger.info(
                 "Operation '%s' successful, returning None for empty response",
@@ -194,7 +196,11 @@ class ScicatClient:
                 logger.info(
                     "Operation '%s' successful%s",
                     operation,
-                    f", pid={getattr(result, 'pid', 'unknown')}" if hasattr(result, 'pid') else "",
+                    (
+                        f", pid={getattr(result, 'pid', 'unknown')}"
+                        if hasattr(result, "pid")
+                        else ""
+                    ),
                 )
             else:
                 logger.info(
@@ -207,7 +213,6 @@ class ScicatClient:
             raise ScicatCommError(
                 f"Error in operation {operation}: Unable to decode response as JSON: {response.content.decode('utf-8')}"
             )
-
 
     def _call_endpoint_expecting_text(
         self,
@@ -224,11 +229,12 @@ class ScicatClient:
             send_token_as_param=send_token_as_param,
         )
         if not response.ok:
-            raise ScicatCommError(f"Error in operation {operation}: Response code not 'ok'. Response test: {response.text}")
+            raise ScicatCommError(
+                f"Error in operation {operation}: Response code not 'ok'. Response test: {response.text}"
+            )
         result = response.text if len(response.content) > 0 else None
         logger.info("Operation '{operation}' successful, response: %s", result)
         return result
-
 
     def datasets_create(
         self, dataset: Union[Dataset, RawDataset, DerivedDataset]
@@ -256,11 +262,11 @@ class ScicatClient:
             Raises if a non-20x message is returned
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="post",
-                endpoint="Datasets",
-                data=dataset,
-                operation="datasets_create",
-            )
+            cmd="post",
+            endpoint="Datasets",
+            data=dataset,
+            operation="datasets_create",
+        )
         assert result and "pid" in result and isinstance(result["pid"], str)
         return result["pid"]
 
@@ -272,7 +278,11 @@ class ScicatClient:
     create_dataset = datasets_create
 
     # DatasetUpdateDto is needed here because everything is optional when updating
-    def datasets_update(self, dataset: Union[Dataset, RawDataset, DerivedDataset, DatasetUpdateDto], pid: str) -> str:
+    def datasets_update(
+        self,
+        dataset: Union[Dataset, RawDataset, DerivedDataset, DatasetUpdateDto],
+        pid: str,
+    ) -> str:
         """Updates an existing dataset
         This function was renamed.
         It is still accessible with the original name for backward compatibility
@@ -296,11 +306,11 @@ class ScicatClient:
             Raises if a non-20x message is returned
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="patch",
-                endpoint=f"Datasets/{quote_plus(pid)}",
-                data=dataset,
-                operation="datasets_update",
-            )
+            cmd="patch",
+            endpoint=f"Datasets/{quote_plus(pid)}",
+            data=dataset,
+            operation="datasets_update",
+        )
         assert result and "pid" in result and isinstance(result["pid"], str)
         return result["pid"]
 
@@ -337,12 +347,12 @@ class ScicatClient:
         """
         endpoint = f"Datasets/{quote_plus(dataset_id)}/origdatablocks"
         result: Optional[OrigDatablock] = self._call_endpoint(
-                cmd="post",
-                endpoint=endpoint,
-                data=datablockDto,
-                operation="datasets_origdatablock_create",
-                model=OrigDatablock,
-            )
+            cmd="post",
+            endpoint=endpoint,
+            data=datablockDto,
+            operation="datasets_origdatablock_create",
+            model=OrigDatablock,
+        )
         assert result is not None
         return result
 
@@ -379,12 +389,12 @@ class ScicatClient:
         assert isinstance(attachment.datasetId, str)
         endpoint = f"{datasetType}/{quote_plus(attachment.datasetId)}/attachments"
         result: Optional[Attachment] = self._call_endpoint(
-                cmd="post",
-                endpoint=endpoint,
-                data=attachment,
-                operation="datasets_attachment_create",
-                model=Attachment,
-            )
+            cmd="post",
+            endpoint=endpoint,
+            data=attachment,
+            operation="datasets_attachment_create",
+            model=Attachment,
+        )
         assert result is not None
         return result
 
@@ -418,11 +428,11 @@ class ScicatClient:
             Raises if a non-20x message is returned
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="post",
-                endpoint="Samples",
-                data=sample,
-                operation="samples_create",
-            )
+            cmd="post",
+            endpoint="Samples",
+            data=sample,
+            operation="samples_create",
+        )
         assert result and "sampleId" in result and isinstance(result["sampleId"], str)
         return result["sampleId"]
 
@@ -457,11 +467,11 @@ class ScicatClient:
         update = SampleUpdateDto(**sample.model_dump())
 
         result: Optional[dict] = self._call_endpoint(
-                cmd="patch",
-                endpoint=f"Samples/{quote_plus(sampleId)}",
-                data=update,
-                operation="samples_update",
-            )
+            cmd="patch",
+            endpoint=f"Samples/{quote_plus(sampleId)}",
+            data=update,
+            operation="samples_update",
+        )
         assert result and "sampleId" in result and isinstance(result["sampleId"], str)
         return result["sampleId"]
 
@@ -489,11 +499,11 @@ class ScicatClient:
             Raises if a non-20x message is returned
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="post",
-                endpoint="Instruments",
-                data=instrument,
-                operation="instruments_create",
-            )
+            cmd="post",
+            endpoint="Instruments",
+            data=instrument,
+            operation="instruments_create",
+        )
         assert result and "pid" in result and isinstance(result["pid"], str)
         return result["pid"]
 
@@ -533,11 +543,11 @@ class ScicatClient:
         update = InstrumentUpdateDto(**instrument.model_dump())
 
         result: Optional[dict] = self._call_endpoint(
-                cmd="patch",
-                endpoint=f"Instruments/{quote_plus(pid)}",
-                data=update,
-                operation="instruments_update",
-            )
+            cmd="patch",
+            endpoint=f"Instruments/{quote_plus(pid)}",
+            data=update,
+            operation="instruments_update",
+        )
         assert result and "pid" in result and isinstance(result["pid"], str)
         return result["pid"]
 
@@ -565,12 +575,14 @@ class ScicatClient:
             Raises if a non-20x message is returned
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="post",
-                endpoint="Proposals",
-                data=proposal,
-                operation="proposals_create",
-            )
-        assert result and "proposalId" in result and isinstance(result["proposalId"], str)
+            cmd="post",
+            endpoint="Proposals",
+            data=proposal,
+            operation="proposals_create",
+        )
+        assert (
+            result and "proposalId" in result and isinstance(result["proposalId"], str)
+        )
         return result["proposalId"]
 
     upload_proposal = proposals_create
@@ -608,12 +620,14 @@ class ScicatClient:
 
         update = ProposalUpdateDto(**proposal.model_dump())
         result: Optional[dict] = self._call_endpoint(
-                cmd="patch",
-                endpoint=f"Proposals/{quote_plus(proposalId)}",
-                data=update,
-                operation="proposals_update",
-            )
-        assert result and "proposalId" in result and isinstance(result["proposalId"], str)
+            cmd="patch",
+            endpoint=f"Proposals/{quote_plus(proposalId)}",
+            data=update,
+            operation="proposals_update",
+        )
+        assert (
+            result and "proposalId" in result and isinstance(result["proposalId"], str)
+        )
         return result["proposalId"]
 
     def datasets_find(
@@ -658,10 +672,10 @@ class ScicatClient:
         query = f"fields={query_field_str}&limits={limit_str}"
 
         result: Optional[list[Dataset]] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"Datasets/fullquery?{query}",
-                operation="datasets_find",
-                model=list[Dataset],
+            cmd="get",
+            endpoint=f"Datasets/fullquery?{query}",
+            operation="datasets_find",
+            model=list[Dataset],
         )
         if result is None:
             return []
@@ -731,8 +745,10 @@ class ScicatClient:
 
         endpoint = f"Datasets?filter={filter_str}"
         result: Optional[list[Dataset]] = self._call_endpoint(
-                cmd="get", endpoint=endpoint, operation="datasets_get_many",
-                model=list[Dataset],
+            cmd="get",
+            endpoint=endpoint,
+            operation="datasets_get_many",
+            model=list[Dataset],
         )
         if result is None:
             return []
@@ -793,8 +809,10 @@ class ScicatClient:
         endpoint = f'Samples?filter={{"where":{filter_field_str},"limits":{limit_str}}}'
 
         result: Optional[list[Sample]] = self._call_endpoint(
-                cmd="get", endpoint=endpoint, operation="samples_get_many",
-                model=list[Sample],
+            cmd="get",
+            endpoint=endpoint,
+            operation="samples_get_many",
+            model=list[Sample],
         )
         if result is None:
             return []
@@ -824,10 +842,10 @@ class ScicatClient:
         endpoint = "PublishedData" + (f'?filter={{"where":{filter}}}' if filter else "")
 
         result: Optional[list[PublishedDataObsoleteDto]] = self._call_endpoint(
-                cmd="get",
-                endpoint=endpoint,
-                operation="published_data_get_many",
-                model=list[PublishedDataObsoleteDto],
+            cmd="get",
+            endpoint=endpoint,
+            operation="published_data_get_many",
+            model=list[PublishedDataObsoleteDto],
         )
         if result is None:
             return []
@@ -852,10 +870,10 @@ class ScicatClient:
             pid of the dataset requested.
         """
         result: Optional[Dataset] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"Datasets/{quote_plus(pid)}",
-                operation="datasets_get_one",
-                model=Dataset,
+            cmd="get",
+            endpoint=f"Datasets/{quote_plus(pid)}",
+            operation="datasets_get_one",
+            model=Dataset,
         )
         return result
 
@@ -871,10 +889,10 @@ class ScicatClient:
             pid of the dataset requested.
         """
         result: Optional[list[Attachment]] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"Datasets/{quote_plus(pid)}/attachments",
-                operation="datasets_attachments_get_one",
-                model=list[Attachment],
+            cmd="get",
+            endpoint=f"Datasets/{quote_plus(pid)}/attachments",
+            operation="datasets_attachments_get_one",
+            model=list[Attachment],
         )
         if result is None:
             return []
@@ -890,10 +908,10 @@ class ScicatClient:
             pid of the dataset requested.
         """
         result: Optional[list[dict]] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"Datasets/{quote_plus(pid)}/externallinks",
-                operation="datasets_externallinks_get_one",
-                model=list[dict],
+            cmd="get",
+            endpoint=f"Datasets/{quote_plus(pid)}/externallinks",
+            operation="datasets_externallinks_get_one",
+            model=list[dict],
         )
         if result is None:
             return []
@@ -931,10 +949,10 @@ class ScicatClient:
         else:
             raise ValueError("You must specify instrument pid or name")
         result: Optional[Instrument] = self._call_endpoint(
-                cmd="get",
-                endpoint=endpoint,
-                operation="instruments_get_one",
-                model=Instrument,
+            cmd="get",
+            endpoint=endpoint,
+            operation="instruments_get_one",
+            model=Instrument,
         )
         return result
 
@@ -958,10 +976,10 @@ class ScicatClient:
             The sample with the requested pid
         """
         result: Optional[Sample] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"Samples/{quote_plus(pid)}",
-                operation="samples_get_one",
-                model=Sample,
+            cmd="get",
+            endpoint=f"Samples/{quote_plus(pid)}",
+            operation="samples_get_one",
+            model=Sample,
         )
         return result
 
@@ -1010,10 +1028,10 @@ class ScicatClient:
             The orig_datablocks of the dataset with the requested pid
         """
         result: Optional[list[OrigDatablock]] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"Datasets/{quote_plus(pid)}/origdatablocks",
-                operation="datasets_origdatablocks_get_one",
-                model=list[OrigDatablock],
+            cmd="get",
+            endpoint=f"Datasets/{quote_plus(pid)}/origdatablocks",
+            operation="datasets_origdatablocks_get_one",
+            model=list[OrigDatablock],
         )
         if result is None:
             return []
@@ -1037,10 +1055,10 @@ class ScicatClient:
         Dataset deleted or None
         """
         result: Optional[Dataset] = self._call_endpoint(
-                cmd="delete",
-                endpoint=f"Datasets/{quote_plus(pid)}",
-                operation="datasets_delete",
-                model=Dataset,
+            cmd="delete",
+            endpoint=f"Datasets/{quote_plus(pid)}",
+            operation="datasets_delete",
+            model=Dataset,
         )
         return result
 
@@ -1060,10 +1078,10 @@ class ScicatClient:
         Sample deleted or None
         """
         result: Optional[Sample] = self._call_endpoint(
-                cmd="delete",
-                endpoint=f"Samples/{quote_plus(pid)}",
-                operation="samples_delete",
-                model=Sample,
+            cmd="delete",
+            endpoint=f"Samples/{quote_plus(pid)}",
+            operation="samples_delete",
+            model=Sample,
         )
         return result
 
@@ -1081,12 +1099,11 @@ class ScicatClient:
         "{}" or None
         """
         result: Optional[object] = self._call_endpoint_expecting_text(
-                cmd="delete",
-                endpoint=f"Instruments/{quote_plus(pid)}",
-                operation="instruments_delete",
+            cmd="delete",
+            endpoint=f"Instruments/{quote_plus(pid)}",
+            operation="instruments_delete",
         )
         return result
-
 
     def proposals_delete(self, pid: str) -> Optional[str]:
         """
@@ -1102,12 +1119,11 @@ class ScicatClient:
         None
         """
         result = self._call_endpoint_expecting_text(
-                cmd="delete",
-                endpoint=f"Proposals/{quote_plus(pid)}",
-                operation="proposals_delete",
+            cmd="delete",
+            endpoint=f"Proposals/{quote_plus(pid)}",
+            operation="proposals_delete",
         )
         return result
-
 
     def admin_elasticsearch_createindex(self, index: str = "dataset") -> Optional[str]:
         """
@@ -1190,10 +1206,10 @@ class ScicatClient:
             response from SciCat backend
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="get",
-                endpoint=f"elastic-search/get-index?index={index}",
-                operation="admin_elasticsearch_getindex",
-                send_token_as_param=False,  # This endpoint will fail if given access_token as a parameter.
+            cmd="get",
+            endpoint=f"elastic-search/get-index?index={index}",
+            operation="admin_elasticsearch_getindex",
+            send_token_as_param=False,  # This endpoint will fail if given access_token as a parameter.
         )
         return result
 
@@ -1212,10 +1228,10 @@ class ScicatClient:
             response from SciCat backend
         """
         result: Optional[dict] = self._call_endpoint(
-                cmd="post",
-                endpoint=f"elastic-search/update-index?index={index}",
-                operation="admin_elasticsearch_updateindex",
-                send_token_as_param=False,  # This endpoint will fail if given access_token as a parameter.
+            cmd="post",
+            endpoint=f"elastic-search/update-index?index={index}",
+            operation="admin_elasticsearch_updateindex",
+            send_token_as_param=False,  # This endpoint will fail if given access_token as a parameter.
         )
         return result
 

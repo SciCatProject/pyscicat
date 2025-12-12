@@ -361,6 +361,7 @@ class PublishedDataCommon:
     """
     The common fields of Published Data and its operations
     """
+
     abstract: str
     createdAt: str
     creator: List[str]
@@ -399,7 +400,7 @@ class PublishedDataObsoleteDto(PublishedDataCommon):
     _id: str
     affiliation: Optional[str] = None
     authors: Optional[List[str]] = None
-    downloadLink: Optional[str] = None  
+    downloadLink: Optional[str] = None
     numberOfFiles: Optional[int] = None
     relatedPublications: Optional[List[str]] = None
     scicatUser: Optional[str] = None
