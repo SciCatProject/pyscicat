@@ -1,12 +1,10 @@
 from datetime import datetime
 from pathlib import Path
 
-import pytest
 import requests_mock
 
 from pyscicat.client import (
     ScicatClient,
-    ScicatCommError,
     encode_thumbnail,
     from_credentials,
     from_token,
