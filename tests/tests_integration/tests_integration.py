@@ -64,7 +64,7 @@ def test_get_dataset():
     datasets = sci_clie.get_datasets({"ownerGroup": "ingestor"})
     assert datasets is not None
     for dataset in datasets:
-        assert dataset["ownerGroup"] == "ingestor"
+        assert dataset.ownerGroup == "ingestor"
 
 
 def test_update_dataset():
@@ -77,7 +77,8 @@ def test_update_dataset():
 
     datasets = sci_clie.get_datasets({})
     assert datasets is not None
-    pid = datasets[0]["pid"]
+    pid = datasets[0].pid
+    assert pid is not None
     payload = DatasetUpdateDto(
         size=142,
         owner="slartibartfast",
