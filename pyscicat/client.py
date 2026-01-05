@@ -840,6 +840,62 @@ class ScicatClient:
     get_published_data = published_data_get_many
     find_published_data = published_data_get_many
 
+
+    def origdatablocks_get_many(
+        self,
+        filter_fields: Optional[dict] = None,
+        skip: Optional[int] = None,
+        limit: Optional[int] = None,
+        order_by: Optional[str] = None,
+    ) -> Optional[list[dict]]:
+        """
+        Gets datablocks using the simple filter mechanism. This
+        is appropriate when you do not require paging or text search, but
+        want to be able to limit results based on items in the Sample object.
+
+        For example, a search for Datablocks of a given ownerGroup would have
+        ```python
+        filter_fields = {"ownerGroup": "1234"}
+        ```
+        If you want to search on partial strings, you can use "like":
+        ```python
+        filter_fields = {"ownerGroup": {"like":"123"}}
+        ```
+        To search within the JSON metadata, join sub-fields with ".":
+        ```python
+        filter_fields = {"sampleCharacteristics.myCustomObject.myField": "1234"}
+        ```
+
+        Parameters
+        ----------
+        filter_fields : dict
+            Dictionary of filtering fields. Must be json serializable.
+
+        skip : int
+            number of items to skip
+
+        limit : int
+            number of items to return
+            if this is set, and "order_by" is not, "order_by" gets the default "createdAt:desc"
+
+        order_by : str
+            The field to use when sorting results, and the sort direction.
+            Composed of a string "field:direction" , where "direction" is "asc" or "desc".
+        """
+        if filter_fields is None:
+            filter_fields = {}
+        filter_field_str = json.dumps(filter_fields)
+        limit_str = self._make_limits(skip, limit, order_by)
+        endpoint = f'origdatablocks?filter={{"where":{filter_field_str},"limits":{limit_str}}}'
+
+        return cast(
+            Optional[list[dict]],
+            self._call_endpoint(
+                cmd="get", endpoint=endpoint, operation="datablocks_get_many"
+            ),
+        )
+
+
     def datasets_get_one(self, pid: str) -> Optional[dict]:
         """
         Gets dataset with the pid provided.
