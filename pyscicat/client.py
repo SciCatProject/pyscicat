@@ -840,7 +840,6 @@ class ScicatClient:
     get_published_data = published_data_get_many
     find_published_data = published_data_get_many
 
-
     def origdatablocks_get_many(
         self,
         filter_fields: Optional[dict] = None,
@@ -886,7 +885,9 @@ class ScicatClient:
             filter_fields = {}
         filter_field_str = json.dumps(filter_fields)
         limit_str = self._make_limits(skip, limit, order_by)
-        endpoint = f'origdatablocks?filter={{"where":{filter_field_str},"limits":{limit_str}}}'
+        endpoint = (
+            f'origdatablocks?filter={{"where":{filter_field_str},"limits":{limit_str}}}'
+        )
 
         return cast(
             Optional[list[dict]],
@@ -894,7 +895,6 @@ class ScicatClient:
                 cmd="get", endpoint=endpoint, operation="datablocks_get_many"
             ),
         )
-
 
     def datasets_get_one(self, pid: str) -> Optional[dict]:
         """
