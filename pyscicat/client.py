@@ -19,13 +19,10 @@ from pyscicat.model import (
     RawDataset,
     DerivedDataset,
     UpdateDataset,
-    UpdateRawDataset,
-    UpdateDerivedDataset,
     Instrument,
     OrigDatablock,
     Proposal,
     Sample,
-    Ownable,
     MongoQueryable,
 )
 
@@ -101,11 +98,10 @@ class ScicatClient:
             raise ScicatCommError("Token not provided")
         self._headers["Authorization"] = "Bearer {}".format(self._token)
 
-
     def _send_to_scicat(
-        self, 
-        cmd: str, 
-        endpoint: str, 
+        self,
+        cmd: str,
+        endpoint: str,
         data: BaseModel = None,
         exclude_fields: set = {},
     ):
@@ -114,14 +110,17 @@ class ScicatClient:
         return requests.request(
             method=cmd,
             url=urljoin(self._base_url, endpoint),
-            json=data.dict(exclude=exclude_fields,exclude_none=True,exclude_unset=True) if data is not None else None,
+            json=data.dict(
+                exclude=exclude_fields,
+                exclude_none=True,
+                exclude_unset=True
+            ) if data is not None else None,
             params={"access_token": self._token},
             headers=self._headers,
             timeout=self._timeout_seconds,
             stream=False,
             verify=True,
         )
-
 
     def _call_endpoint(
         self,
@@ -133,8 +132,6 @@ class ScicatClient:
         exclude_fields: set = {},
     ) -> Optional[dict]:
         response = self._send_to_scicat(cmd=cmd, endpoint=endpoint, data=data, exclude_fields=exclude_fields)
-        #print(response)
-        #print(response.text)
         if not response.ok:
             result = response.json()
             err = result.get("error", {})
@@ -218,9 +215,9 @@ class ScicatClient:
             Raises if a non-20x message is returned
         """
         return self._call_endpoint(
-            cmd="post", 
-            endpoint="Datasets", 
-            data=dataset, 
+            cmd="post",
+            endpoint="Datasets",
+            data=dataset,
             operation="datasets_create",
             exclude_fields=self._exclude_fields['default'],
         )
@@ -405,7 +402,7 @@ class ScicatClient:
             endpoint=endpoint,
             data=origdatablock,
             operation="datasets_origdatablock_create",
-            exclude_fields={'id','datasetId','ownerGroup','accessGroups'},
+            exclude_fields={'id', 'datasetId', 'ownerGroup', 'accessGroups'},
         )
 
     """
@@ -708,7 +705,7 @@ class ScicatClient:
     find_datasets_full_query = datasets_find
 
     def datasets_get_many(
-            self, 
+            self,
             full_filter: Optional[dict] = None,
             filter_fields: Optional[dict] = None,
             where: Optional[dict] = None,
@@ -759,10 +756,10 @@ class ScicatClient:
             - skip : number indicating how many items needs to be skipped in the beginning of the list
             - order : enumeration (ascending or descending) indicating the order of the results
         """
-        
-        #if not filter_fields:
-        #    filter_fields = {}
-        #filter_fields = json.dumps(filter_fields)
+
+        # if not filter_fields:
+        #     filter_fields = {}
+        # filter_fields = json.dumps(filter_fields)
 
         filter_dict = {}
         if full_filter:
@@ -772,20 +769,19 @@ class ScicatClient:
                 filter_dict['where'] = where
             elif filter_fields:
                 filter_dict['where'] = filter_fields
-    
+
             if fields:
                 filter_dict['fields'] = fields
-    
+
             if limits:
                 filter_dict['limits'] = limits
 
         filter_string = json.dumps(filter_dict) if filter_dict else ""
         endpoint = 'Datasets' + f'?filter={filter_string}' if filter_string else ""
-        #print(endpoint)
         return self._call_endpoint(
-            cmd="get", 
-            endpoint=endpoint, 
-            operation="datasets_get_many", 
+            cmd="get",
+            endpoint=endpoint,
+            operation="datasets_get_many",
             allow_404=True
         )
 
@@ -1012,7 +1008,7 @@ class ScicatClient:
             Raises if a non-20x message is returned
 
         """
-        endpoint = f"origdatablocks"
+        endpoint = "origdatablocks"
         return self._call_endpoint(
             cmd="post",
             endpoint=endpoint,

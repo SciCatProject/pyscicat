@@ -32,7 +32,7 @@ def add_mock_requests(mock_request):
         json={"id": "a_token"},
     )
 
-    mock_request.post(local_url + "Instruments", json={"pid": "earth"})
+    mock_request.post(local_url + "Instruments", json={"uniqueName": "magictelescope", "pid": "earth"})
     mock_request.post(local_url + "Proposals", json={"proposalId": "deepthought"})
     mock_request.post(local_url + "Samples", json={"sampleId": "gargleblaster"})
     mock_request.patch(local_url + "Instruments/earth", json={"pid": "earth"})
@@ -82,11 +82,19 @@ def test_scicat_ingest():
 
         # Instrument
         instrument = Instrument(
-            pid="earth", name="Earth", customMetadata={"a": "field"}
+            uniqueName="magictelescope", pid="earth", name="Earth", customMetadata={"a": "field"}
         )
-        assert scicat.upload_instrument(instrument) == "earth"
-        assert scicat.instruments_create(instrument) == "earth"
-        assert scicat.instruments_update(instrument) == "earth"
+        assert scicat.upload_instrument(instrument) == {
+            "uniqueName": "magictelescope",
+            "pid": "earth",
+        }
+        assert scicat.instruments_create(instrument) == {
+            "uniqueName": "magictelescope",
+            "pid": "earth",
+        }
+        assert scicat.instruments_update(instrument) == {
+            "pid": "earth",
+        }
 
         # Proposal
         proposal = Proposal(
@@ -95,9 +103,9 @@ def test_scicat_ingest():
             email="deepthought@viltvodle.com",
             **ownable.dict()
         )
-        assert scicat.upload_proposal(proposal) == "deepthought"
-        assert scicat.proposals_create(proposal) == "deepthought"
-        assert scicat.proposals_update(proposal) == "deepthought"
+        assert scicat.upload_proposal(proposal) == {"proposalId": "deepthought"}
+        assert scicat.proposals_create(proposal) == {"proposalId": "deepthought"}
+        assert scicat.proposals_update(proposal) == {"proposalId": "deepthought"}
 
         # Sample
         sample = Sample(
@@ -106,9 +114,9 @@ def test_scicat_ingest():
             sampleCharacteristics={"a": "field"},
             **ownable.dict()
         )
-        assert scicat.upload_sample(sample) == "gargleblaster"
-        assert scicat.samples_create(sample) == "gargleblaster"
-        assert scicat.samples_update(sample) == "gargleblaster"
+        assert scicat.upload_sample(sample) == {"sampleId": "gargleblaster"}
+        assert scicat.samples_create(sample) == {"sampleId": "gargleblaster"}
+        assert scicat.samples_update(sample) == {"sampleId": "gargleblaster"}
 
         # RawDataset
         dataset = RawDataset(
@@ -129,19 +137,19 @@ def test_scicat_ingest():
             **ownable.dict()
         )
         dataset_id = scicat.upload_raw_dataset(dataset)
-        assert dataset_id == "42"
+        assert dataset_id == {"pid": "42"}
 
         # Update record
         dataset.principalInvestigator = "B. Turtle"
-        dataset_id_2 = scicat.update_dataset(dataset, dataset_id)
+        dataset_id_2 = scicat.update_dataset(dataset, dataset_id["pid"])
         assert dataset_id_2 == dataset_id
 
         # Datablock with DataFiles
         data_file = DataFile(path="/foo/bar", size=42)
         data_block = Datablock(
             size=42,
-            version=1,
-            datasetId=dataset_id,
+            version="1",
+            datasetId=dataset_id["pid"],
             dataFileList=[data_file],
             **ownable.dict()
         )
@@ -149,7 +157,7 @@ def test_scicat_ingest():
 
         # Attachment
         attachment = Attachment(
-            datasetId=dataset_id,
+            datasetId=dataset_id["pid"],
             thumbnail=encode_thumbnail(thumb_path),
             caption="scattering image",
             **ownable.dict()

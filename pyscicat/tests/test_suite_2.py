@@ -25,7 +25,7 @@ test_datasets = {}
 
 def set_up_test_environment(mock_request):
 
-    global test_datasets
+    # global test_datasets
 
     # load test data
     for name, path in test_dataset_files.items():
@@ -113,15 +113,16 @@ def test_scicat_ingest_raw_dataset():
         dataset = RawDataset(**data["dataset"], **ownable.dict())
         created_dataset_pid = scicat.create_dataset(dataset)
 
-        assert created_dataset_pid == data["id"]
+        assert created_dataset_pid == data["dataset"] | {"pid": data["id"]}
 
         # origDatablock with DataFiles
         origDataBlock = OrigDatablock(
             size=data["orig_datablock"]["size"],
-            datasetId=created_dataset_pid,
+            datasetId=created_dataset_pid["pid"],
             dataFileList=[
                 DataFile(**file) for file in data["orig_datablock"]["dataFileList"]
             ],
+            chkAlg="sha2",
             **ownable.dict()
         )
         created_origdatablock = scicat.create_dataset_origdatablock(origDataBlock)
@@ -149,15 +150,16 @@ def test_scicat_ingest_derived_dataset():
         dataset = RawDataset(**data["dataset"], **ownable.dict())
         created_dataset_pid = scicat.create_dataset(dataset)
 
-        assert created_dataset_pid == data["id"]
+        assert created_dataset_pid == data["dataset"] | {"pid": data["id"]}
 
         # origDatablock with DataFiles
         origDataBlock = OrigDatablock(
             size=data["orig_datablock"]["size"],
-            datasetId=created_dataset_pid,
+            datasetId=created_dataset_pid["pid"],
             dataFileList=[
                 DataFile(**file) for file in data["orig_datablock"]["dataFileList"]
             ],
+            chkAlg="sha2",
             **ownable.dict()
         )
         created_origdatablock = scicat.create_dataset_origdatablock(origDataBlock)
